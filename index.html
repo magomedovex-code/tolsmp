@@ -211,6 +211,44 @@ input:focus,select:focus{outline:2px solid var(--acc);border-color:transparent}
 .st::before{counter-increment:s;content:counter(s);position:absolute;top:-10px;left:-6px;background:var(--acc);color:#111;font-weight:800;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.85rem}
 .st pre{font-size:.8rem;padding:7px 8px}
 
+
+/* ---------- book ---------- */
+.bookwrap{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
+@media(max-width:900px){.bookwrap{grid-template-columns:1fr;justify-items:center}}
+.bookcol{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:400px}
+.mcbook{position:relative;width:100%;max-width:380px;aspect-ratio:380/470;perspective:1400px}
+.leaf{position:absolute;inset:0;background:#e3cfa5;background-image:radial-gradient(circle at 30% 20%,rgba(255,255,255,.25),transparent 60%),radial-gradient(circle at 80% 90%,rgba(120,80,30,.12),transparent 55%);border:10px solid #7a3f22;border-radius:8px;box-shadow:inset 8px 0 0 #b33a2c,inset 10px 0 0 #7a3f22,0 14px 30px rgba(0,0,0,.5);padding:18px 18px 54px 30px;color:#2b1d10;font:15px/1.45 Consolas,"Cascadia Mono",monospace;transform-origin:left center;backface-visibility:hidden;overflow:hidden}
+.leaf .pg{text-align:right;font-weight:700;margin-bottom:8px}
+.leaf .hd{text-align:center;font-weight:800;letter-spacing:.06em;margin:2px 0 8px;color:#5b2a12}
+.leaf .it{margin-bottom:12px}
+.leaf .cmd{font-weight:700;color:#1d1209;word-break:break-word;cursor:pointer;border-radius:4px;padding:1px 3px;margin-left:-3px;transition:background .2s}
+.leaf .cmd:hover{background:rgba(124,207,91,.35)}
+.leaf .ds{color:#4a3520}
+.leaf .arr{position:absolute;bottom:12px;font-size:26px;line-height:1;cursor:pointer;user-select:none;background:none;border:0;padding:4px 8px;min-height:40px}
+.leaf .arr.l{left:22px;color:#24305e}.leaf .arr.r{right:14px;color:#d39b1c}
+.leaf .arr[disabled]{opacity:.25;cursor:default}
+.leaf.turnF{animation:turnF .55s ease-in both}
+.leaf.turnB{animation:turnB .55s ease-in both}
+.leaf.inF{animation:inF .45s ease-out both}
+.leaf.inB{animation:inB .45s ease-out both}
+@keyframes turnF{to{transform:rotateY(-95deg);filter:brightness(.6)}}
+@keyframes turnB{to{transform:translateX(30px) rotateY(25deg);opacity:0}}
+@keyframes inF{from{transform:translateX(18px);opacity:0}}
+@keyframes inB{from{transform:rotateY(-95deg);filter:brightness(.6)}}
+.bnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.bnav button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;font:700 .85rem Consolas,monospace}
+.bnav button.on{background:var(--acc);color:#111;border-color:var(--acc)}
+.bnav button.adm{border-bottom:3px solid #666}
+.bnav button.mod{border-bottom:3px solid var(--moder)}
+.bside{display:flex;flex-direction:column;gap:12px;width:100%}
+.bside .card h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.bside .what{font-size:.95rem}
+.bside .ex{margin-top:6px}
+.bside .ex small{white-space:normal}
+.binfo{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+.binfo>div{flex:1;min-width:160px}
+.simlink{display:inline-block;margin-top:8px;font-size:.9rem}
+
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:var(--acc);color:#111;font-weight:700;padding:10px 18px;border-radius:10px;transition:transform .25s,opacity .25s;opacity:0;pointer-events:none;z-index:50}
 .toast.show{transform:translateX(-50%);opacity:1}
 footer{max-width:1120px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.85rem}
@@ -224,6 +262,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 40px;color:var(--muted);fon
     <div class="brand"><div class="logo"></div>TolSMP <span class="moder">Moder</span></div>
     <nav class="tabs" id="tabs">
       <a href="#home">Главная</a>
+      <a href="#book">📖 Книга</a>
       <a href="#sim">Симулятор</a>
       <a href="#filter">Фильтр a:</a>
       <a href="#rules">Законы и наказания</a>
@@ -252,6 +291,7 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 40px;color:var(--muted);fon
     </div>
   </div>
 
+  <a href="#book" class="card" style="display:flex;gap:14px;align-items:center;margin-top:18px;text-decoration:none;color:var(--text);border-color:#6b4a24"><span style="font-size:2rem">📖</span><span><b>Книга команд CoreProtect</b><br><span class="small muted">Все 11 страниц из игры с объяснениями и кнопкой «Копировать»</span></span></a>
   <h2 style="margin-top:28px">Что случилось?</h2>
   <p class="lead">Выбери ситуацию: откроется закон со ссылкой на нужные команды.</p>
   <div class="sit">
@@ -278,6 +318,26 @@ footer{max-width:1120px;margin:0 auto;padding:0 16px 40px;color:var(--muted);fon
     <div class="st"><b>Доказательства</b><pre>/co l u:Ник t:1d r:40 a:-block</pre><p class="small">скриншот (F2)</p></div>
     <div class="st"><b>Наказать</b><pre>/jail Ник jail 20m</pre><p class="small">срок из законов</p></div>
     <div class="st"><b>Позвать админа</b><p class="small">для отката. Передай ник, время, координаты и скрин</p></div>
+  </div>
+</section>
+
+
+<!-- ===================== BOOK ===================== -->
+<section class="page" id="p-book">
+  <h2>📖 Книга «CoreProtect — команды для модераторов»</h2>
+  <p class="lead">Все 11 страниц твоей книги из игры. Листай стрелками (или ← → на клавиатуре). Справа подробное объяснение, кто может использовать команду, и кнопка «Копировать». По команде в книге тоже можно кликнуть, она скопируется.</p>
+  <div class="bookwrap">
+    <div class="bookcol">
+      <div class="mcbook" id="mcbook"></div>
+      <div class="bnav" id="bnav"></div>
+      <div class="small muted" style="text-align:center"><span class="moder">Moder ✔</span> розовая полоска · <span class="admin">Админ</span> серая полоска</div>
+    </div>
+    <div class="bside">
+      <div class="card binfo">
+        <div><label for="bkNick">Подставить ник вместо НИК</label><input id="bkNick" placeholder="например Steve" autocomplete="off"></div>
+      </div>
+      <div id="bkSide"></div>
+    </div>
   </div>
 </section>
 
@@ -433,11 +493,11 @@ document.addEventListener('click',function(e){var b=e.target.closest('[data-copy
 function exRow(cmd,note){return '<div class="ex"><span>'+esc(cmd)+(note?'<small>'+note+'</small>':'')+'</span><button class="cp" type="button" data-cp="'+esc(cmd)+'">Копировать</button></div>'}
 
 /* ---------- tabs ---------- */
-var pageName='home',jumpRule=null;
+var pageName='home',jumpRule=null,pendingSim=null;
 function route(){var h=(location.hash||'#home').slice(1);if(!$('p-'+h))h='home';pageName=h;
   [].forEach.call(document.querySelectorAll('section.page'),function(s){s.classList.toggle('on',s.id==='p-'+h)});
   [].forEach.call(document.querySelectorAll('#tabs a'),function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+h)});
-  if(h==='sim'){fit();if(!started){started=true;play('inspect')}}
+  if(h==='sim'){fit();if(pendingSim){started=true;var ps=pendingSim;pendingSim=null;play(ps)}else if(!started){started=true;play('inspect')}}
   if(jumpRule&&h==='rules'){var el=$(jumpRule);jumpRule=null;if(el){setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'center'});el.animate([{outline:'4px solid #7ccf5b'},{outline:'4px solid transparent'}],{duration:1600})},60)}}else window.scrollTo(0,0);
 }
 document.addEventListener('click',function(e){var a=e.target.closest('[data-rule]');if(a)jumpRule=a.dataset.rule});
@@ -513,7 +573,7 @@ var S={
   ]},
  lookup:{t:'/co lookup',who:'moder',syn:'/co l u:&lt;ник&gt; t:&lt;время&gt; [a:действие] [r:радиус]',
   exp:'<b>Поиск по всем записям</b> с любого места. <code>u:</code> кто, <code>t:</code> за сколько времени, <code>a:</code> какое действие (это фильтр), <code>r:</code> радиус.',
-  ex:[['/co l u:Steve t:1h','всё, что Steve делал за час'],['/co l u:Steve t:1d a:-block','что сломал за день'],['/co l u:Steve t:10m a:chat #count','сколько сообщений за 10 мин'],['/co l 2','следующая страница']],
+  ex:[['/co l u:Steve t:1h','всё, что Steve делал за час'],['/co l u:Steve t:1d a:-block','что сломал за день'],['/co l u:Steve t:10m a:chat #count','сколько сообщений за 10 мин'],['/co l r:20 t:1h','все игроки в 20 блоках за час'],['/co l i:diamond_ore t:1d a:-block','кто копал алмазы (X-ray)'],['/co l u:Steve a:container t:1d','действия с сундуками'],['/co l u:Steve a:inventory t:1d','изменения инвентаря'],['/co l u:Steve a:session','входы и выходы'],['/co l u:Steve a:username','старые ники'],['/co l 2','следующая страница']],
   steps:[
    ['Steve ломает дом, крадёт алмазы и пишет в чат',function(){W.go('steve',330);later(function(){W.grief([12,13])},700);later(function(){W.go('steve',500)},1200);later(function(){W.steal()},2100)}],
    ['Ты можешь быть где угодно',function(){W.say(470,'лол');W.go('steve',760);later(function(){W.hide('steve')},1000);W.go('you',40)}],
@@ -599,16 +659,16 @@ var S={
 
  rollback:{t:'/co rollback',who:'admin',syn:'/co rb u:&lt;ник&gt; t:&lt;время&gt; r:&lt;радиус&gt;',
   exp:'<b>Перемотка мира назад.</b> Сломанное встаёт на место. <b>У модера нет.</b> Передай админу ник, время и координаты.',
-  ex:[['/co rb u:Steve t:1h r:20','откатить Steve за час в 20 блоках']],
+  ex:[['/co rollback u:Steve t:1h #preview','сначала посмотреть'],['/co rollback u:Steve t:1h','откатить за час'],['/co rollback u:Steve t:30m r:20','30 мин, 20 блоков'],['/co rollback u:Steve t:1h i:stone','только stone'],['/co rollback u:Steve t:1h a:-block','только сломанное'],['/co rollback t:15m r:30','все игроки, 15 мин, 30 блоков'],['/co rollback u:Steve t:1h r:#global','по всему серверу']],
   steps:[
    ['Дом сломан',function(){W.grief();W.go('admin',360)}],
    ['Админ пишет /co rb u:Steve t:1h r:20',function(){W.type('/co rb u:Steve t:1h r:20',function(){})}],
    ['Блоки возвращаются',function(){W.fix();W.chat(['<span class="c-g">CoreProtect</span> - Rollback completed for "Steve".'])}]
   ]},
  restore:{t:'/co restore',who:'admin',syn:'/co rs u:&lt;ник&gt; t:&lt;время&gt; r:&lt;радиус&gt;',
-  exp:'<b>Отмена отката:</b> возвращает как было до rollback. Только админ.',ex:[],
+  exp:'<b>Отмена отката:</b> возвращает как было до rollback. Только админ.',ex:[['/co restore u:Steve t:1h','восстановить за час'],['/co restore u:Steve t:1h #preview','сначала посмотреть']],
   steps:[['Админ откатил лишнее',function(){W.go('admin',360)}],['/co rs u:Steve t:1h r:20',function(){W.type('/co rs u:Steve t:1h r:20',function(){})}],['Изменения вернулись',function(){W.grief();W.chat(['<span class="c-g">CoreProtect</span> - Restore completed.'])}]]},
- undo:{t:'/co undo',who:'admin',syn:'/co undo',exp:'<b>Ctrl+Z</b> для последнего rollback/restore. Только админ.',ex:[],
+ undo:{t:'/co undo',who:'admin',syn:'/co undo',exp:'<b>Ctrl+Z</b> для последнего rollback/restore. Только админ.',ex:[['/co undo','отменить последний rollback/restore']],
   steps:[['Админ сделал откат',function(){W.go('admin',360)}],['/co undo',function(){W.type('/co undo',function(){})}],['Откат отменён',function(){W.grief();W.chat(['<span class="c-g">CoreProtect</span> - Undo completed.'])}]]},
  purge:{t:'/co purge',who:'admin',syn:'/co purge t:&lt;время&gt;',exp:'<b>Удалить старые записи навсегда.</b> После этого старый гриф уже не найти.',ex:[],
   steps:[['Записей слишком много',function(){W.go('admin',360);W.chat(['<span class="c-x">… 2 000 000 записей …</span>'])}],['/co purge t:30d',function(){W.type('/co purge t:30d',function(){})}],['Всё старше 30 дней стёрто',function(){W.clear();W.chat(['<span class="c-g">CoreProtect</span> - Data purge successful.'])}]]},
@@ -716,6 +776,12 @@ var ALL=[
  ['/co i','moder','/co i','лупа: кликаешь по блоку или сундуку и видишь, кто трогал'],
  ['/co near','moder','/co near','всё, что было в 5 блоках вокруг тебя'],
  ['/co lookup','moder','/co l u:Ник t:1h a:-block','поиск по нику, времени, действию, месту'],
+ ['/co lookup r:20','moder','/co l r:20 t:1h','все игроки в радиусе 20 блоков'],
+ ['/co lookup i:','moder','/co l i:diamond_ore t:1d a:-block','только один блок (X-ray)'],
+ ['/co lookup a:container','moder','/co l u:Ник a:container t:1d','действия с сундуками'],
+ ['/co lookup a:inventory','moder','/co l u:Ник a:inventory t:1d','изменения инвентаря'],
+ ['/co lookup a:session','moder','/co l u:Ник a:session','входы и выходы'],
+ ['/co lookup a:username','moder','/co l u:Ник a:username','старые ники'],
  ['/mute','moder','/mute Ник 10m причина','запрет писать в чат · /unmute снимает'],
  ['/jail','moder','/jail Ник jail 20m','тюрьма на время · /unjail выпускает · /jails показывает список'],
  ['/kick','moder','/kick Ник причина','выкинуть с сервера (можно сразу зайти)'],
@@ -727,6 +793,8 @@ var ALL=[
  ['/invsee','maybe','/invsee Ник','посмотреть инвентарь игрока'],
  ['/seen','maybe','/seen Ник','когда игрок был в сети последний раз'],
  ['/co rollback','admin','/co rb u:Ник t:1h r:20','откатить гриф'],
+ ['/co rollback #preview','admin','/co rb u:Ник t:1h #preview','сначала посмотреть, что откатится'],
+ ['/co rollback r:#global','admin','/co rb u:Ник t:1h r:#global','откат по всему серверу'],
  ['/co restore','admin','/co rs u:Ник t:1h r:20','отменить откат'],
  ['/co undo','admin','/co undo','отменить последний rollback/restore'],
  ['/co purge','admin','/co purge t:30d','удалить старые записи навсегда'],
@@ -734,6 +802,65 @@ var ALL=[
  ['co consumer · migrate-db','console','co consumer','только консоль сервера']
 ];
 $('allTbl').insertAdjacentHTML('beforeend',ALL.map(function(r){return '<tr><td><code>'+esc(r[0])+'</code></td><td>'+badge(r[1])+'</td><td><code>'+esc(r[2])+'</code></td><td>'+r[3]+'</td></tr>'}).join(''));
+
+
+/* ---------- book ---------- */
+var BOOK=[
+ {hd:'CoreProtect — команды для модераторов',sub:'ПРОВЕРКА',who:'moder',sim:'inspect',items:[
+   ['/co inspect','Включить режим проверки блоков. Нажать команду ещё раз — выключить.','Включает «лупу». ЛКМ по блоку показывает, кто его ставил/ломал, ПКМ по сундуку показывает, кто брал вещи. Коротко: /co i']]},
+ {sub:'ПОИСК ДЕЙСТВИЙ',who:'moder',sim:'lookup',items:[
+   ['/co lookup u:НИК t:1h','Показать действия игрока за последний час.','Всё подряд: блоки, сундуки, чат. Добавь a:, чтобы оставить только нужное.'],
+   ['/co lookup r:20 t:1h','Показать действия в радиусе 20 блоков за последний час.','Ник не нужен: покажет всех, кто что-то делал в 20 блоках от тебя. Удобно, если не знаешь, кто загриферил.']]},
+ {who:'moder',sim:'lookup',items:[
+   ['/co lookup i:diamond_ore t:1d a:-block','Показать добычу алмазной руды за последний день.','i: = только этот блок, a:-block = сломанные. Так ловят X-ray: если кто-то копает только алмазы.'],
+   ['/co lookup u:НИК a:chat t:1d','Показать сообщения игрока за последний день.','Доказательство для спама (§1.8), оскорблений (§1.5), рекламы (§1.9).']]},
+ {who:'moder',sim:'lookup',items:[
+   ['/co lookup u:НИК a:container t:1d','Показать действия игрока с сундуками и другими контейнерами.','Что клал и что брал. Для воровства бери a:-container, тогда будет только «взял».'],
+   ['/co lookup u:НИК a:inventory t:1d','Показать изменения инвентаря игрока.','Что появлялось и пропадало у игрока в инвентаре.']]},
+ {who:'moder',sim:'lookup',items:[
+   ['/co lookup u:НИК a:session','Показать входы и выходы игрока.','Когда заходил и выходил. Полезно при побеге (§2.0) и чтобы понять, был ли игрок онлайн во время грифа.'],
+   ['/co lookup u:НИК a:username','Показать предыдущие никнеймы игрока.','Если игрок сменил ник, здесь видны старые.']]},
+ {sub:'ОТКАТ',who:'admin',sim:'rollback',items:[
+   ['/co rollback u:НИК t:1h #preview','Предварительно показать, что будет откатано.','#preview показывает откат только тому, кто пишет команду. Мир не меняется. Отменить превью: /co cancel.'],
+   ['/co rollback u:НИК t:1h','Откатить действия игрока за последний час.','Без r: откат идёт в радиусе 10 блоков от того, кто пишет команду.']]},
+ {who:'admin',sim:'rollback',items:[
+   ['/co rollback u:НИК t:30m r:20','Откатить действия игрока за 30 минут в радиусе 20 блоков.',''],
+   ['/co rollback u:НИК t:1h i:stone','Откатить только действия со stone.','i: оставляет только этот блок.']]},
+ {who:'admin',sim:'rollback',items:[
+   ['/co rollback u:НИК t:1h a:-block','Откатить только сломанные игроком блоки.','Поставленное игроком останется, вернётся только сломанное.'],
+   ['/co rollback t:15m r:30','Откатить действия всех игроков за 15 минут в радиусе 30 блоков.','Осторожно: откатит и честных игроков рядом.']]},
+ {who:'admin',sim:'rollback',items:[
+   ['/co rollback u:НИК t:1h r:#global','Откатить действия игрока за час по всему серверу.','r:#global означает все миры и любое расстояние.']]},
+ {sub:'ОТМЕНА ОТКАТА',who:'admin',sim:'undo',items:[
+   ['/co undo','Отменить последний rollback/restore.','Как Ctrl+Z: если откатили не то.']]},
+ {sub:'ВОССТАНОВЛЕНИЕ',who:'admin',sim:'restore',items:[
+   ['/co restore u:НИК t:1h','Восстановить действия игрока за последний час.','Противоположность rollback: возвращает как было до отката.'],
+   ['/co restore u:НИК t:1h #preview','Предварительно посмотреть, что будет восстановлено.','']]}
+];
+var bp=0,busy=false;
+function bkN(){return ($('bkNick').value.trim().replace(/\s+/g,''))||'НИК'}
+function bkSub(c){return c.replace(/НИК/g,bkN())}
+function leafHTML(i){var p=BOOK[i];
+  return '<div class="pg">Page '+(i+1)+' of '+BOOK.length+'</div>'+(p.hd?'<div style="margin-bottom:6px">'+p.hd+'</div>':'')+(p.sub?'<div class="hd">'+p.sub+'</div>':'')+
+   p.items.map(function(it){return '<div class="it"><span class="cmd" data-cp="'+esc(bkSub(it[0]))+'" title="Нажми, чтобы скопировать">'+esc(bkSub(it[0]))+'</span><div class="ds">'+it[1]+'</div></div>'}).join('')+
+   '<button class="arr l" type="button" data-bk="-1" '+(i===0?'disabled':'')+' aria-label="Назад">◀</button><button class="arr r" type="button" data-bk="1" '+(i===BOOK.length-1?'disabled':'')+' aria-label="Вперёд">▶</button>'}
+function bkSide(){var p=BOOK[bp];
+  $('bkSide').innerHTML='<div class="card"><h3>Страница '+(bp+1)+' '+badge(p.who)+'</h3>'+
+   (p.who==='admin'?'<p class="small" style="margin:0 0 8px;color:#ffb3ad">У модера этой команды нет. Ты находишь нарушителя через lookup, а команду пишет админ. Можешь скопировать её и отправить ему.</p>':'')+
+   p.items.map(function(it){return exRow(bkSub(it[0]),it[1]+(it[2]?'<br><span style="color:#cfd6dc">'+it[2]+'</span>':''))}).join('')+
+   '<a class="simlink" href="#sim" data-sim="'+p.sim+'">▶ Посмотреть в симуляторе</a></div>'}
+function bkRender(dir){var box=$('mcbook');
+  var neu=document.createElement('div');neu.className='leaf'+(dir>0?' inF':dir<0?' inB':'');neu.innerHTML=leafHTML(bp);
+  var old=box.firstChild;
+  if(old&&dir){old.style.zIndex=2;old.className='leaf '+(dir>0?'turnF':'turnB');box.insertBefore(neu,old);busy=true;setTimeout(function(){if(old.parentNode)old.remove();busy=false},520)}
+  else{box.innerHTML='';box.appendChild(neu)}
+  [].forEach.call($('bnav').children,function(b,j){b.classList.toggle('on',j===bp)});bkSide()}
+function bkGo(n){if(busy||n<0||n>=BOOK.length||n===bp)return;var d=n>bp?1:-1;bp=n;bkRender(d)}
+BOOK.forEach(function(p,i){var b=document.createElement('button');b.type='button';b.textContent=i+1;b.className=p.who==='admin'?'adm':'mod';b.addEventListener('click',function(){bkGo(i)});$('bnav').appendChild(b)});
+document.addEventListener('click',function(e){var a=e.target.closest('[data-bk]');if(a&&!a.disabled)bkGo(bp+parseInt(a.dataset.bk,10));var s=e.target.closest('[data-sim]');if(s)pendingSim=s.dataset.sim});
+document.addEventListener('keydown',function(e){if(pageName!=='book'||/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))return;if(e.key==='ArrowRight')bkGo(bp+1);if(e.key==='ArrowLeft')bkGo(bp-1)});
+$('bkNick').addEventListener('input',function(){$('mcbook').firstChild.innerHTML=leafHTML(bp);bkSide()});
+bkRender(0);
 
 route();
 })();
