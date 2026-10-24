@@ -3,1092 +3,681 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TolSMP Команды</title>
+<title>TolSMP CoreProtect</title>
+<meta name="description" content="Справочник CoreProtect для сервера TolSMP: смерть и вещи, гриф, воровство, откаты, ошибки, законы. Сверено с исходным кодом CoreProtect 24.1.">
 <style>
 :root{
-  --bg:#0f1114;--bg2:#15181c;--panel:#1b1e23;--panel2:#23272e;--line:#2f343c;
-  --text:#ecebe7;--muted:#9aa2ab;--acc:#7ccf5b;--red:#e5534b;--yel:#e6b84a;--blue:#5aa9e6;
-  --moder:#ff6fae;--code:#0b0d0f;--paper:#e9d6b0;--paperInk:#3b2a1a;--grass:#5d9c3a;--dirt:#7a5533;
+  --bg:#0f1113;--bg2:#14171a;--panel:#191c20;--panel2:#20242a;--line:#2c3138;
+  --text:#e9e9e6;--muted:#9aa2ab;--dim:#6f7780;
+  --acc:#e9b44c;--acc2:#3a2c10;--green:#7fd06b;--red:#f0645a;--blue:#6db4ef;--cyan:#58c7d6;
+  --code:#0a0b0d;--mono:Consolas,"Cascadia Mono","Liberation Mono",monospace;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,"Segoe UI",Arial,sans-serif;line-height:1.55}
+html,body{margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.6 system-ui,"Segoe UI",Arial,sans-serif}
 a{color:var(--acc)}
-code,pre,.mono{font-family:Consolas,"Cascadia Mono",monospace}
-code{background:var(--code);padding:1px 6px;border-radius:5px;font-size:.93em;color:#cfe8c4}
-pre{background:var(--code);padding:10px 12px;border-radius:8px;border-left:3px solid var(--acc);margin:8px 0;font-size:.95rem;color:#d9f0cf;white-space:pre-wrap;word-break:break-word}
-h1{font-size:2rem;margin:.1em 0 .3em;line-height:1.2}
-h2{font-size:1.45rem;margin:0 0 .3em}
-h3{margin:.1em 0 .4em;font-size:1.06rem}
-.muted{color:var(--muted)} .small{font-size:.9rem}
-.lead{color:var(--muted);margin:0 0 18px;max-width:760px}
+a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+code{font-family:var(--mono);background:var(--code);color:#ffe3a6;padding:1px 6px;border-radius:5px;font-size:.92em;white-space:nowrap}
+h1{font-size:2rem;line-height:1.2;margin:0 0 .4em}
+h2{font-size:1.5rem;line-height:1.25;margin:0 0 .5em;padding-top:8px}
+h3{font-size:1.08rem;margin:0 0 .4em}
+p{margin:.4em 0 .8em}
+.muted{color:var(--muted)}.small{font-size:.9rem}
+section{padding:34px 0 10px;border-bottom:1px solid var(--line);scroll-margin-top:70px}
+section:last-of-type{border-bottom:0}
 
-/* ---------- header / tabs ---------- */
-header{position:sticky;top:0;z-index:20;background:rgba(15,17,20,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
-.hbar{max-width:1120px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:18px}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:1.1rem;white-space:nowrap}
-.brand .logo{width:30px;height:30px;border-radius:7px;background:linear-gradient(var(--grass) 0 35%,var(--dirt) 35%);box-shadow:inset 0 0 0 2px rgba(0,0,0,.3)}
-.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}
-.tabs::-webkit-scrollbar{display:none}
-.tabs a{color:var(--muted);text-decoration:none;padding:8px 13px;border-radius:9px;font-weight:600;font-size:.93rem;white-space:nowrap}
-.tabs a:hover{color:var(--text);background:var(--panel)}
-.tabs a.on{color:#111;background:var(--acc)}
-@media(max-width:700px){.hbar{flex-direction:column;align-items:stretch;gap:8px}}
+/* ---------- top bar ---------- */
+.top{position:sticky;top:0;z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.topin{max-width:1240px;margin:0 auto;padding:10px 16px;display:flex;gap:14px;align-items:center}
+.brand{font-weight:800;font-size:1.05rem;white-space:nowrap;display:flex;gap:9px;align-items:center;text-decoration:none;color:var(--text)}
+.brand i{display:block;width:26px;height:26px;border-radius:6px;background:linear-gradient(#5d9c3a 0 34%,#7a5533 34%);box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
+.brand span{font:700 .72rem var(--mono);color:var(--acc);background:var(--acc2);border:1px solid #5b4418;padding:1px 6px;border-radius:5px}
+.searchwrap{position:relative;flex:1;max-width:520px;margin-left:auto}
+#q{width:100%;background:var(--code);border:1px solid var(--line);color:var(--text);border-radius:9px;padding:9px 12px;font-size:.95rem}
+#res{position:absolute;left:0;right:0;top:calc(100% + 6px);background:var(--panel);border:1px solid var(--line);border-radius:10px;max-height:60vh;overflow:auto;display:none;box-shadow:0 12px 30px rgba(0,0,0,.5)}
+#res.on{display:block}
+#res a{display:block;padding:8px 12px;border-bottom:1px solid var(--line);text-decoration:none;color:var(--text)}
+#res a:hover,#res a:focus{background:var(--panel2)}
+#res a b{font-family:var(--mono);color:#ffe3a6;font-weight:700}
+#res a small{display:block;color:var(--muted)}
+#res .none{padding:10px 12px;color:var(--muted)}
 
-main{max-width:1120px;margin:0 auto;padding:26px 16px 80px}
-section.page{display:none;animation:fade .3s}
-section.page.on{display:block}
-@keyframes fade{from{opacity:0;transform:translateY(6px)}}
+/* ---------- layout ---------- */
+.wrap{max-width:1240px;margin:0 auto;padding:0 16px 60px;display:grid;grid-template-columns:230px minmax(0,1fr);gap:34px}
+nav.side{position:sticky;top:64px;align-self:start;max-height:calc(100vh - 70px);overflow:auto;padding:24px 0}
+nav.side a{display:block;color:var(--muted);text-decoration:none;padding:6px 10px;border-radius:7px;font-size:.93rem;border-left:2px solid transparent}
+nav.side a:hover{color:var(--text);background:var(--panel)}
+nav.side a.on{color:var(--text);border-left-color:var(--acc);background:var(--panel)}
+nav.side .grp{font:700 .72rem system-ui;letter-spacing:.06em;text-transform:uppercase;color:var(--dim);margin:14px 10px 4px}
+main{min-width:0}
+@media(max-width:900px){
+  .wrap{grid-template-columns:1fr;gap:0}
+  nav.side{position:static;max-height:none;padding:14px 0 0;display:flex;flex-wrap:wrap;gap:6px}
+  nav.side .grp{display:none}
+  nav.side a{border:1px solid var(--line);border-radius:20px;padding:5px 11px;font-size:.86rem}
+  nav.side a.on{border-color:var(--acc)}
+  .topin{flex-wrap:wrap}
+  .searchwrap{max-width:none;flex-basis:100%;margin-left:0}
+}
 
-.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-@media(max-width:760px){.g2{grid-template-columns:1fr}}
+/* ---------- blocks ---------- */
+.lead{color:#c9cfd6;font-size:1.05rem;max-width:760px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:15px 17px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:700px){.g2{grid-template-columns:1fr}}
+.key{border-left:4px solid var(--acc)}
+.key.red{border-left-color:var(--red)}.key.green{border-left-color:var(--green)}.key.blue{border-left-color:var(--blue)}
+.key h3{display:flex;gap:8px;align-items:baseline}
+.key .n{font:800 .8rem var(--mono);color:var(--bg);background:var(--acc);border-radius:5px;padding:0 6px}
+.key.red .n{background:var(--red)}.key.green .n{background:var(--green)}.key.blue .n{background:var(--blue)}
+.key p{font-size:.93rem;margin:.2em 0 .5em}
+.msg{display:block;font:600 .84rem var(--mono);color:#ffb3ad;background:#24130f;border:1px solid #4d241f;border-radius:6px;padding:4px 8px;margin:4px 0;white-space:normal}
+.msg.ok{color:#bfe9b2;background:#14210f;border-color:#2c4a22}
 
-.moder,.admin,.console,.maybe{display:inline-flex;align-items:center;font:700 .76rem Consolas,monospace;padding:1px 8px;border-radius:6px;white-space:nowrap}
-.moder{color:var(--moder);background:#3a1830;border:1px solid #6b2a55}
-.admin{color:#bbb;background:#2a2d33;border:1px solid #3a3f47}
-.console{color:#c8b8ff;background:#2b2850;border:1px solid #433d7a}
-.maybe{color:#ffd166;background:#3a3016;border:1px solid #6b5a22}
-.cat{display:inline-flex;align-items:center;font:700 .76rem system-ui;padding:1px 8px;border-radius:6px;white-space:nowrap;border:1px solid}
-.k-find{color:#8fd3ff;background:#16283a;border-color:#2a4c6b}
-.k-check{color:#c8b8ff;background:#251f3d;border-color:#433d7a}
-.k-punish{color:#ffd166;background:#3a3016;border-color:#6b5a22}
-.k-rollback{color:#a6e38c;background:#1d2e19;border-color:#3b5e31}
-.k-service{color:#bbb;background:#2a2d33;border-color:#3a3f47}
-.k-console{color:#ff9f9f;background:#3a1c1c;border-color:#6b2f2f}
-
-/* ---------- home ---------- */
-.hero{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center;background:linear-gradient(135deg,#1d2a1a,#1b1e23 65%);border:1px solid var(--line);border-radius:18px;padding:24px}
-@media(max-width:760px){.hero{grid-template-columns:1fr}}
-.heroimg{position:relative;height:180px;border-radius:14px;overflow:hidden;background:linear-gradient(#2f5e8a,#8cb6d8 78%)}
-.heroimg .gnd{position:absolute;left:0;right:0;bottom:0;height:34px;background:linear-gradient(var(--grass) 0 7px,var(--dirt) 7px)}
-.heroimg .bars{position:absolute;bottom:34px;left:50%;width:70px;height:84px;margin-left:-35px;background:repeating-linear-gradient(90deg,#3a3a3a 0 5px,transparent 5px 16px);border-top:5px solid #3a3a3a;animation:jailDrop 4s infinite}
-.heroimg .p{position:absolute;bottom:34px;left:50%;margin-left:-11px}
-.heroimg .tag{position:absolute;left:10px;top:10px;font:700 12px Consolas,monospace;background:rgba(0,0,0,.55);color:#fff;padding:3px 8px;border-radius:6px}
-@keyframes jailDrop{0%,15%{transform:translateY(-200px)}35%,85%{transform:none}100%{transform:translateY(-200px)}}
-.sit{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:22px}
-.sit a{display:block;text-decoration:none;color:var(--text);background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;transition:border-color .2s,transform .2s}
-.sit a:hover{border-color:var(--acc);transform:translateY(-2px)}
-.sit .e{font-size:1.7rem}
-.sit b{display:block;margin:4px 0 2px}
-.sit span{font-size:.88rem;color:var(--muted)}
-.three{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:22px}
-@media(max-width:760px){.three{grid-template-columns:1fr}}
-.three .card h3{display:flex;align-items:center;gap:8px}
-
-/* ---------- simulator ---------- */
-.groups{display:flex;flex-direction:column;gap:12px;margin-bottom:14px}
-.grp{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.grp .gl{font:700 .78rem system-ui;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;width:150px;flex:0 0 150px}
-@media(max-width:700px){.grp .gl{width:100%;flex:0 0 100%}}
-.grp button{background:var(--panel);border:1px solid var(--line);color:var(--text);padding:7px 12px;border-radius:9px;cursor:pointer;font:600 .9rem Consolas,monospace;min-height:40px}
-.grp button:hover{border-color:#4a515b}
-.grp button.on{border-color:var(--acc);background:#1d2a1a;color:#fff}
-.grp.g-find button{border-left:3px solid #5aa9e6}.grp.g-check button{border-left:3px solid #a78bfa}.grp.g-pun button{border-left:3px solid var(--yel)}.grp.g-rb button{border-left:3px solid var(--acc)}.grp.g-svc button{border-left:3px solid #666}.grp.g-con button{border-left:3px solid #e5534b}
-.grp.g-pun button{border-left:3px solid var(--yel)}
-.grp.g-adm button{border-left:3px solid #555}
-
-.stage{display:grid;grid-template-columns:1fr 330px;background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
-@media(max-width:900px){.stage{grid-template-columns:1fr}}
-.stage .left{min-width:0}
-.stage .right{border-left:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px}
-@media(max-width:900px){.stage .right{border-left:0;border-top:1px solid var(--line)}}
-.stitle{font:700 1.2rem Consolas,monospace;color:#fff}
-.syntax{background:#000;border-radius:8px;padding:9px 11px;font:600 .95rem Consolas,monospace;color:#fff;word-break:break-word}
-.syntax i{color:#8fd3ff;font-style:normal}
-.syntax u{color:#ffd166;text-decoration:none}
-.sexp{font-size:.95rem}
-.exlist{display:flex;flex-direction:column;gap:6px}
-.ex{display:flex;align-items:center;gap:8px;background:var(--panel2);border-radius:8px;padding:6px 6px 6px 10px;font:600 .88rem Consolas,monospace;color:#d9f0cf}
-.ex span{flex:1;word-break:break-word}
-.ex small{display:block;font:400 .78rem system-ui;color:var(--muted)}
-.cp{background:var(--panel);color:var(--text);border:1px solid var(--line);border-radius:6px;cursor:pointer;font-size:.8rem;padding:4px 8px;min-height:30px;white-space:nowrap}
+/* commands */
+.cmds{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.cmd{display:flex;align-items:center;gap:10px;background:var(--code);border:1px solid var(--line);border-radius:8px;padding:7px 7px 7px 12px}
+.cmd .c{flex:1;min-width:0}
+.cmd .c b{display:block;font:700 .95rem var(--mono);color:#ffe3a6;word-break:break-word}
+.cmd .c small{display:block;color:var(--muted);font-size:.82rem;line-height:1.35}
+.cp{flex:0 0 auto;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:7px;padding:6px 11px;font-size:.84rem;cursor:pointer;min-height:36px;min-width:104px}
 .cp:hover{border-color:var(--acc);color:var(--acc)}
+.cp.done{border-color:var(--green);color:var(--green)}
 
-.wwrap{position:relative;overflow:hidden;height:300px}
-.world{position:absolute;left:0;top:0;width:760px;height:300px;transform-origin:0 0;background:linear-gradient(#2f5e8a,#8cb6d8 78%);overflow:hidden}
-.world .gnd{position:absolute;left:0;right:0;bottom:0;height:46px;background:linear-gradient(var(--grass) 0 8px,var(--dirt) 8px)}
-.b{position:absolute;width:30px;height:30px;background:repeating-linear-gradient(90deg,#a8793f 0 6px,#93683a 6px 12px);box-shadow:inset 0 0 0 1px rgba(0,0,0,.35);transition:transform .35s,opacity .35s}
-.b.glass{background:rgba(200,235,255,.45);box-shadow:inset 0 0 0 2px #dff3ff}
-.b.gone{opacity:0;transform:scale(.3) rotate(25deg)}
-.b.flash{animation:flash .6s}
-@keyframes flash{0%{filter:brightness(2.2)}100%{filter:none}}
-.who{position:absolute;bottom:46px;width:26px;transition:left 1s ease-in-out,opacity .5s,transform .9s;text-align:center}
-.who .lab{position:absolute;bottom:62px;left:50%;transform:translateX(-50%);font:700 11px Consolas,monospace;background:rgba(0,0,0,.55);padding:1px 6px;border-radius:4px;white-space:nowrap}
-.who .hd{width:20px;height:20px;margin:0 auto;background:#e0b48a;border:2px solid #00000040}
-.who .bd{width:24px;height:22px;margin:0 auto}
-.who .lg{width:20px;height:18px;margin:0 auto;background:#2b3a8a}
-#steve .bd{background:#2f9bd0} #you .bd{background:#a12f7a} #admin .bd{background:#6d6d6d}
-.who.ghost{opacity:.35!important;filter:saturate(.3)}
-.chestS{position:absolute;bottom:46px;left:540px;width:34px;height:30px;background:linear-gradient(#b5823f 0 45%,#3a2a18 45% 54%,#a8763a 54%);box-shadow:inset 0 0 0 2px rgba(0,0,0,.35)}
-.gem{position:absolute;width:12px;height:12px;background:#5ee1e6;transform:rotate(45deg);box-shadow:0 0 8px #5ee1e6;transition:left .9s,bottom .9s,opacity .4s;opacity:0}
-.tnt{position:absolute;width:30px;height:30px;background:linear-gradient(#c73a2c 0 35%,#eee 35% 65%,#c73a2c 65%);box-shadow:inset 0 0 0 1px #000;opacity:0;transition:opacity .3s}
-#mag,#hammer,#boot{position:absolute;font-size:30px;transition:left .8s,top .8s,opacity .3s,transform .3s;opacity:0;filter:drop-shadow(0 2px 3px #0007)}
-#ring{position:absolute;border:3px dashed #fff;border-radius:50%;opacity:0;transform:translate(-50%,50%) scale(.2);transition:transform .8s,opacity .4s}
-#ring.on{opacity:.9;transform:translate(-50%,50%) scale(1)}
-#say{position:absolute;background:#fff;color:#111;font:700 11px system-ui;padding:3px 8px;border-radius:8px;opacity:0;transition:opacity .3s;white-space:nowrap}
-#say.blocked{background:#e5534b;color:#fff}
-#bars{position:absolute;bottom:46px;width:64px;height:96px;background:repeating-linear-gradient(90deg,#2e2e2e 0 5px,transparent 5px 15px);border-top:6px solid #2e2e2e;transform:translateY(-320px);transition:transform .6s cubic-bezier(.5,1.6,.6,1)}
-#bars.on{transform:none}
-#bigtxt{position:absolute;left:0;right:0;top:70px;text-align:center;font:900 44px Consolas,monospace;color:#e5534b;text-shadow:0 3px 0 #000;opacity:0;transform:scale(.4);transition:all .35s}
-#bigtxt.on{opacity:1;transform:none}
-#inv{position:absolute;right:20px;top:20px;width:210px;background:#c6c6c6;border:3px solid #fff;border-right-color:#555;border-bottom-color:#555;padding:8px;opacity:0;transform:scale(.8);transition:all .3s}
-#inv.on{opacity:1;transform:none}
-#inv .ttl{font:700 11px Consolas,monospace;color:#333;margin-bottom:5px}
-#inv .sl{display:grid;grid-template-columns:repeat(6,1fr);gap:3px}
-#inv .sl div{aspect-ratio:1;background:#8b8b8b;border:2px solid #373737;border-right-color:#fff;border-bottom-color:#fff;display:grid;place-items:center;font-size:15px}
-.puff{position:absolute;width:8px;height:8px;border-radius:50%;background:#d6b4ff;animation:puff .8s forwards}
-@keyframes puff{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
-.chat{position:absolute;left:8px;bottom:8px;width:min(520px,calc(100% - 16px));font:13px Consolas,monospace}
-.chat .ln{background:rgba(0,0,0,.6);padding:2px 7px;color:#fff;animation:ln .3s}
-@keyframes ln{from{opacity:0;transform:translateY(6px)}}
-.chat .inp{background:rgba(0,0,0,.82);padding:4px 7px;margin-top:4px;color:#fff;min-height:24px;display:none}
-.chat .inp.on{display:block}
-.chat .inp::after{content:"_";animation:blink 1s steps(1) infinite}
-@keyframes blink{50%{opacity:0}}
-.c-g{color:#a6e38c}.c-r{color:#ff8f86}.c-b{color:#8fd3ff}.c-y{color:#ffd166}.c-x{color:#9a9a9a}.c-p{color:var(--moder)}.c-o{color:#ffb347}
+/* minecraft chat mock */
+.mc{background:#000;border-radius:8px;padding:10px 12px;font:14px/1.55 var(--mono);color:#fff;overflow-x:auto;margin:8px 0;border:1px solid #222}
+.mc div{white-space:pre}
+.mc .t{color:#fff}.mc .u{color:#00aaaa}.mc .g{color:#aaaaaa}.mc .gi{color:#aaaaaa;font-style:italic}.mc .p{color:#55ff55}.mc .m{color:#ff5555}.mc .h{color:#00aaaa}
+.mc s{text-decoration:line-through}
 
-.cap{padding:12px 16px;border-top:1px solid var(--line);display:flex;gap:12px;align-items:center}
-.cap .num{flex:0 0 auto;background:var(--acc);color:#111;font-weight:800;border-radius:9px;padding:3px 10px;font-size:.85rem}
-.cap .txt{font-size:1.02rem;font-weight:600}
-.cap .rp{margin-left:auto;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:5px 11px;cursor:pointer;font-size:.85rem;min-height:34px;white-space:nowrap}
-.dots{display:flex;gap:6px;padding:0 16px 14px}
-.dots i{flex:1;max-width:46px;height:5px;border-radius:3px;background:#3a3f47}
-.dots i.on{background:var(--acc)}
+/* steps */
+.steps{counter-reset:s;display:flex;flex-direction:column;gap:12px;margin:12px 0}
+.step{position:relative;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px 12px 58px}
+.step::before{counter-increment:s;content:counter(s);position:absolute;left:14px;top:13px;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#1a1205;font-weight:800;display:grid;place-items:center}
+.step h3{margin-top:3px}
+.step p{font-size:.95rem}
+.warn,.danger,.tip{border-radius:9px;padding:9px 12px;font-size:.92rem;margin:8px 0}
+.warn{background:#2b2210;border:1px solid #5b4418;color:#ffe3a6}
+.danger{background:#2a1412;border:1px solid #5e2a25;color:#ffc6c0}
+.tip{background:#13202b;border:1px solid #27445e;color:#cfe6ff}
 
-/* ---------- filter ---------- */
-.filt{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
-.chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-.chips button{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:20px;padding:6px 13px;cursor:pointer;font:600 .92rem Consolas,monospace;min-height:38px}
-.chips button.on{background:var(--acc);color:#111;border-color:var(--acc)}
-.fcmd{font:700 1.15rem Consolas,monospace;background:#000;color:#fff;padding:10px 12px;border-radius:8px}
-.fcmd .a{color:#b48cff}
-.rows{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-@media(max-width:700px){.rows{grid-template-columns:1fr}}
-.r{display:flex;align-items:center;gap:10px;background:var(--panel2);border-radius:10px;padding:8px 12px;transition:opacity .35s,transform .35s}
-.r .ic{font-size:1.25rem;width:26px;text-align:center}
-.r .tg{margin-left:auto;font:600 .78rem Consolas,monospace;color:var(--muted)}
-.r.hide{opacity:.13;transform:scale(.98)}
-.r.hit{box-shadow:inset 3px 0 0 var(--acc)}
-.fres{margin-top:12px;font-size:.95rem}
+/* situations */
+details.sit{background:var(--panel);border:1px solid var(--line);border-radius:12px;margin:10px 0}
+details.sit>summary{cursor:pointer;list-style:none;padding:14px 16px;display:flex;gap:12px;align-items:center;font-weight:700}
+details.sit>summary::-webkit-details-marker{display:none}
+details.sit>summary .ic{font-size:1.35rem;width:30px;text-align:center}
+details.sit>summary .lw{margin-left:auto;font:600 .78rem system-ui;color:var(--acc);background:var(--acc2);border:1px solid #5b4418;border-radius:12px;padding:2px 9px;white-space:nowrap}
+details.sit>summary .ar{color:var(--dim);font-size:.9rem}
+details.sit[open]>summary{border-bottom:1px solid var(--line)}
+details.sit[open]>summary .ar{transform:rotate(90deg)}
+details.sit .body{padding:6px 16px 14px}
+details.sit .steps .step{background:var(--bg2)}
+.sitctl{display:flex;gap:8px;margin:6px 0 4px;flex-wrap:wrap}
+.btn{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:7px 13px;cursor:pointer;font-size:.88rem;min-height:38px}
+.btn:hover{border-color:var(--acc)}
+.btn.pri{background:var(--acc);color:#1a1205;border-color:var(--acc);font-weight:800}
 
-/* ---------- tables ---------- */
-.tbl{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:14px}
-table{width:100%;border-collapse:collapse;font-size:.93rem}
-th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+/* tables */
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--panel);margin:10px 0}
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th,td{text-align:left;vertical-align:top;padding:9px 12px;border-bottom:1px solid var(--line)}
 tr:last-child td{border-bottom:0}
-th{color:var(--muted);font-weight:600;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;background:var(--bg2)}
+th{background:var(--bg2);color:var(--muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+td .msg{margin:0}
+.y{color:var(--green);font-weight:700}.n{color:var(--red);font-weight:700}
 
-/* ---------- rules ---------- */
-.ctrlbar{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:16px;position:sticky;top:64px;z-index:5}
-@media(max-width:700px){.ctrlbar{position:static}}
-.ctrlbar>div{min-width:170px;flex:1}
+/* builder */
+.bld{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+@media(max-width:1000px){.bld{grid-template-columns:1fr}}
+.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
 label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}
-input,select{width:100%;background:var(--code);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:.95rem;font-family:inherit}
-input:focus,select:focus{outline:2px solid var(--acc);border-color:transparent}
-.rules{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:14px}
-.rule{background:var(--paper);color:var(--paperInk);border-radius:6px;padding:14px 16px 12px;border:3px solid #7b4a2a;box-shadow:inset 6px 0 0 #b33a2c,0 6px 18px rgba(0,0,0,.35);display:flex;flex-direction:column}
-.rule .top{display:flex;justify-content:space-between;align-items:center;gap:8px}
-.rule .no{font-family:Consolas,monospace;font-weight:800;color:#7b4a2a}
-.rule h3{color:#2a1a0e;margin-top:2px}
-.rule p{margin:.2em 0 .5em;font-size:.92rem}
-.term{display:inline-block;background:#3b2a1a;color:#ffd98a;font-weight:700;font-size:.8rem;padding:2px 9px;border-radius:12px;white-space:nowrap}
-.term.ban{background:#8a1f17;color:#fff}
-.rule .box{background:#1b1e23;color:var(--text);border-radius:6px;padding:8px 10px;margin-top:6px}
-.rule .box .h{font:700 .74rem system-ui;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
-.rule .box.chk .h{color:#8fd3ff}.rule .box.pun .h{color:#ffd166}
-.rule .ex{background:#0c0e10}
+input[type=text],select{width:100%;background:var(--code);color:var(--text);border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:.95rem;font-family:inherit}
+.chk{display:flex;gap:8px;align-items:center;font-size:.92rem;min-height:40px;color:var(--text);margin:0}
+.chk input{width:18px;height:18px}
+.seg{display:inline-flex;background:var(--code);border:1px solid var(--line);border-radius:9px;padding:3px;margin-bottom:12px}
+.seg button{background:transparent;border:0;color:var(--muted);font-weight:700;padding:7px 14px;border-radius:7px;cursor:pointer;min-height:36px}
+.seg button.on{background:var(--acc);color:#1a1205}
+.out h3{font-size:.95rem;color:var(--muted);margin:10px 0 4px}
+.verdict{display:flex;flex-direction:column;gap:6px;margin-top:10px}
 
-/* ---------- builder ---------- */
-.builder{background:var(--panel);border:1px solid var(--acc);border-radius:16px;padding:18px}
-.fields{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
-.out{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-.out pre{flex:1;margin:0;font-size:1.1rem;min-width:220px}
-.btn{background:var(--acc);color:#111;border:0;border-radius:8px;padding:0 18px;font-weight:700;cursor:pointer;font-size:.95rem;min-height:44px}
-.bexp{margin-top:10px;font-size:.95rem;color:var(--muted)}
-.seg{display:inline-flex;background:var(--panel2);border-radius:10px;padding:4px;margin-bottom:14px}
-.seg button{background:transparent;border:0;color:var(--muted);font-weight:700;padding:8px 14px;border-radius:7px;cursor:pointer;min-height:38px}
-.seg button.on{background:var(--acc);color:#111}
+/* laws */
+.laws{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:12px}
+.law{background:#e8d5ae;color:#33240f;border:3px solid #7b4a2a;border-radius:6px;padding:12px 14px}
+.law .hd{display:flex;justify-content:space-between;gap:8px;align-items:center}
+.law .no{font:800 .95rem var(--mono);color:#7b4a2a}
+.law .tm{font:700 .78rem system-ui;background:#3b2a1a;color:#ffd98a;border-radius:10px;padding:2px 8px;white-space:nowrap}
+.law .tm.ban{background:#7d1d16;color:#fff}
+.law h3{color:#24170a;margin:4px 0 2px}
+.law p{font-size:.9rem;margin:.2em 0 .6em}
+.law .cmd{background:#16181b;border-color:#000}
 
-/* ---------- flow ---------- */
-.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;counter-reset:s;margin-top:10px}
-@media(max-width:860px){.flow{grid-template-columns:1fr 1fr}}
-@media(max-width:480px){.flow{grid-template-columns:1fr}}
-.st{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:13px;position:relative}
-.st::before{counter-increment:s;content:counter(s);position:absolute;top:-10px;left:-6px;background:var(--acc);color:#111;font-weight:800;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;font-size:.85rem}
-.st pre{font-size:.8rem;padding:7px 8px}
-
-
-
-/* ---------- situations ---------- */
-.sitlay{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start}
-@media(max-width:860px){.sitlay{grid-template-columns:1fr}}
-#sitList{display:flex;flex-direction:column;gap:6px;position:sticky;top:76px}
-@media(max-width:860px){#sitList{position:static;display:grid;grid-template-columns:1fr 1fr}}
-@media(max-width:480px){#sitList{grid-template-columns:1fr}}
-#sitList button{display:flex;gap:10px;align-items:center;text-align:left;background:var(--panel);border:1px solid var(--line);color:var(--text);border-radius:11px;padding:9px 11px;cursor:pointer;min-height:48px;font:inherit}
-#sitList button:hover{border-color:#4a515b}
-#sitList button.on{border-color:var(--acc);background:#1d2a1a}
-#sitList .si{font-size:1.4rem;width:30px;text-align:center;flex:0 0 30px}
-#sitList b{display:block;font-size:.92rem;line-height:1.25}
-#sitList small{color:var(--muted);font-size:.78rem}
-.sitpanel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px}
-.sithead{display:flex;gap:16px;align-items:center}
-.sithead h2{margin:0 0 6px}
-.sicon{font-size:2.6rem;width:70px;height:70px;border-radius:16px;background:var(--panel2);display:grid;place-items:center;flex:0 0 70px}
-.a-shake{animation:shk 2.2s infinite}.a-bounce{animation:bnc 1.8s infinite}.a-fade{animation:fdd 2.6s infinite}
-@keyframes shk{0%,60%,100%{transform:none}65%{transform:rotate(-10deg)}70%{transform:rotate(10deg)}75%{transform:rotate(-6deg)}80%{transform:rotate(4deg)}}
-@keyframes bnc{0%,100%{transform:none}50%{transform:translateY(-6px)}}
-@keyframes fdd{0%,100%{opacity:1}50%{opacity:.35}}
-.sitintro{color:#cfd6dc;margin:14px 0 18px}
-.steps{display:flex;flex-direction:column;gap:12px;position:relative;margin-bottom:12px}
-.stp{display:flex;gap:14px;background:var(--bg2);border:1px solid var(--line);border-radius:14px;padding:14px;animation:stin .4s both}
-@keyframes stin{from{opacity:0;transform:translateY(8px)}}
-.stp .sn{flex:0 0 34px;width:34px;height:34px;border-radius:50%;border:2px solid var(--acc);background:transparent;color:var(--acc);font-weight:800;cursor:pointer;font-size:.95rem}
-.stp.done{opacity:.55}.stp.done .sn{background:var(--acc);color:#111}.stp.done h3{text-decoration:line-through}
-.stp .sb{flex:1;min-width:0}
-.stp h3{margin:.2em 0 .3em}
-.stp p{margin:.2em 0 .6em;font-size:.94rem}
-.logline{border-left-color:var(--blue);font-size:.86rem}
-.swarn{margin-top:8px;background:#3a3016;border:1px solid #6b5a22;color:#ffe2a0;border-radius:9px;padding:8px 11px;font-size:.88rem}
-.faq{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-.fq h3{display:flex;gap:8px;align-items:center}
-.fq h3 span{font-size:1.3rem}
-
-/* ---------- book ---------- */
-.bookwrap{display:grid;grid-template-columns:400px 1fr;gap:22px;align-items:start}
-@media(max-width:900px){.bookwrap{grid-template-columns:1fr;justify-items:center}}
-.bookcol{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%;max-width:400px}
-.mcbook{position:relative;width:100%;max-width:380px;aspect-ratio:380/470;perspective:1400px}
-.leaf{position:absolute;inset:0;background:#e3cfa5;background-image:radial-gradient(circle at 30% 20%,rgba(255,255,255,.25),transparent 60%),radial-gradient(circle at 80% 90%,rgba(120,80,30,.12),transparent 55%);border:10px solid #7a3f22;border-radius:8px;box-shadow:inset 8px 0 0 #b33a2c,inset 10px 0 0 #7a3f22,0 14px 30px rgba(0,0,0,.5);padding:18px 18px 54px 30px;color:#2b1d10;font:15px/1.45 Consolas,"Cascadia Mono",monospace;transform-origin:left center;backface-visibility:hidden;overflow:hidden}
-.leaf .pg{text-align:right;font-weight:700;margin-bottom:8px}
-.leaf .hd{text-align:center;font-weight:800;letter-spacing:.06em;margin:2px 0 8px;color:#5b2a12}
-.leaf .it{margin-bottom:12px}
-.leaf .cmd{font-weight:700;color:#1d1209;word-break:break-word;cursor:pointer;border-radius:4px;padding:1px 3px;margin-left:-3px;transition:background .2s}
-.leaf .cmd:hover{background:rgba(124,207,91,.35)}
-.leaf .ds{color:#4a3520}
-.leaf .arr{position:absolute;bottom:12px;font-size:26px;line-height:1;cursor:pointer;user-select:none;background:none;border:0;padding:4px 8px;min-height:40px}
-.leaf .arr.l{left:22px;color:#24305e}.leaf .arr.r{right:14px;color:#d39b1c}
-.leaf .arr[disabled]{opacity:.25;cursor:default}
-.leaf.turnF{animation:turnF .55s ease-in both}
-.leaf.turnB{animation:turnB .55s ease-in both}
-.leaf.inF{animation:inF .45s ease-out both}
-.leaf.inB{animation:inB .45s ease-out both}
-@keyframes turnF{to{transform:rotateY(-95deg);filter:brightness(.6)}}
-@keyframes turnB{to{transform:translateX(30px) rotateY(25deg);opacity:0}}
-@keyframes inF{from{transform:translateX(18px);opacity:0}}
-@keyframes inB{from{transform:rotateY(-95deg);filter:brightness(.6)}}
-.bnav{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
-.bnav button{width:34px;height:34px;border-radius:8px;border:1px solid var(--line);background:var(--panel);color:var(--text);cursor:pointer;font:700 .85rem Consolas,monospace}
-.bnav button.on{background:var(--acc);color:#111;border-color:var(--acc)}
-.bnav button.adm{border-bottom:3px solid var(--acc)}
-.bnav button.mod{border-bottom:3px solid #5aa9e6}
-.bside{display:flex;flex-direction:column;gap:12px;width:100%}
-.bside .card h3{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.bside .what{font-size:.95rem}
-.bside .ex{margin-top:6px}
-.bside .ex small{white-space:normal}
-.binfo{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
-.binfo>div{flex:1;min-width:160px}
-.simlink{display:inline-block;margin-top:8px;font-size:.9rem}
-
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(80px);background:var(--acc);color:#111;font-weight:700;padding:10px 18px;border-radius:10px;transition:transform .25s,opacity .25s;opacity:0;pointer-events:none;z-index:50}
-.toast.show{transform:translateX(-50%);opacity:1}
-footer{max-width:1120px;margin:0 auto;padding:0 16px 40px;color:var(--muted);font-size:.85rem}
-@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+footer{color:var(--muted);font-size:.86rem;padding:24px 0 0}
+#toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--green);color:#0d1a08;font-weight:800;padding:9px 16px;border-radius:9px;display:none;z-index:50}
+#toast.on{display:block}
+@media print{.top,nav.side,.cp,#toast,.sitctl{display:none!important}.wrap{display:block}details.sit .body{display:block}body{background:#fff;color:#000}}
 </style>
 </head>
 <body>
 
-<header>
-  <div class="hbar">
-    <div class="brand"><div class="logo"></div>TolSMP</div>
-    <nav class="tabs" id="tabs">
-      <a href="#home">Главная</a>
-      <a href="#sit">🚨 Ситуации</a>
-      <a href="#book">📖 Книга</a>
-      <a href="#sim">🎮 Симулятор</a>
-      <a href="#filter">🎚️ Фильтры</a>
-      <a href="#rules">⚖️ Законы</a>
-      <a href="#builder">🛠️ Конструктор</a>
-      <a href="#all">📋 Все команды</a>
-    </nav>
+<div class="top"><div class="topin">
+  <a class="brand" href="#start"><i></i>TolSMP <span>CoreProtect</span></a>
+  <div class="searchwrap">
+    <input id="q" type="text" placeholder="Поиск команды или ситуации: смерть, сундук, rollback, координаты…" autocomplete="off" aria-label="Поиск по сайту">
+    <div id="res" role="listbox"></div>
   </div>
-</header>
+</div></div>
+
+<div class="wrap">
+<nav class="side" id="side" aria-label="Разделы">
+  <div class="grp">Начало</div>
+  <a href="#start">Главное за 1 минуту</a>
+  <div class="grp">Что делать</div>
+  <a href="#death">Игрок умер: вещи и убийца</a>
+  <a href="#sit">Все ситуации</a>
+  <div class="grp">Понимать CoreProtect</div>
+  <a href="#read">Как читать ответ</a>
+  <a href="#errors">Ошибки и что делать</a>
+  <a href="#params">Параметры и действия</a>
+  <div class="grp">Инструменты</div>
+  <a href="#builder">Конструктор команды</a>
+  <a href="#cmds">Все команды</a>
+  <div class="grp">Сервер</div>
+  <a href="#laws">Законы и наказания</a>
+  <a href="#admin">Права, настройки, версия</a>
+</nav>
 
 <main>
 
-<!-- ===================== HOME ===================== -->
-<section class="page" id="p-home">
-  <div class="hero">
-    <div>
-      <div class="muted small">Minecraft 1.21.11 · CoreProtect + Essentials</div>
-      <h1>Все команды TolSMP</h1>
-      <p>Работа делится на три шага: <b>находит</b>, кто нарушил (CoreProtect), <b>наказывает</b> по законам (mute, jail, ban) и <b>откатывает</b> гриф (rollback).</p>
-      <p class="small muted">Начни с вкладки «🚨 Ситуации»: там пошаговые планы на каждый случай.</p>
-    </div>
-    <div class="heroimg" aria-hidden="true">
-      <div class="gnd"></div>
-      <div class="p who" id="heroP" style="position:absolute;left:50%;margin-left:-13px;bottom:34px"><div class="hd"></div><div class="bd" style="background:#2f9bd0"></div><div class="lg"></div></div>
-      <div class="bars"></div>
-      <div class="tag">/jail Steve 1 20m</div>
-    </div>
-  </div>
+<!-- ======================= START ======================= -->
+<section id="start">
+  <h1>CoreProtect на TolSMP</h1>
+  <p class="lead">Справочник для админа: найти нарушителя, вернуть вещи, откатить гриф и не наделать ошибок. Всё здесь сверено с <b>исходным кодом CoreProtect 24.1</b>: какие команды работают, какие сообщения пишет плагин и почему.</p>
+  <p class="small muted">Вместо <code>Ник</code> в командах пиши настоящий ник. Кнопка «Копировать» копирует команду целиком. Тюрьма на сервере — <b>1</b>.</p>
 
-  <a href="#sit" class="card" style="display:flex;gap:14px;align-items:center;margin-top:18px;text-decoration:none;color:var(--text);border-color:#6b2f2f"><span style="font-size:2rem">🚨</span><span><b>Что делать, если…</b><br><span class="small muted">12 ситуаций по шагам: убийство, смерть, гриф, воровство, X-ray и другие + «Как узнать…»</span></span></a>
-  <a href="#book" class="card" style="display:flex;gap:14px;align-items:center;margin-top:10px;text-decoration:none;color:var(--text);border-color:#6b4a24"><span style="font-size:2rem">📖</span><span><b>Книга команд CoreProtect</b><br><span class="small muted">Все 11 страниц из игры с объяснениями и кнопкой «Копировать»</span></span></a>
-  <h2 style="margin-top:28px">Что случилось?</h2>
-  <p class="lead">Выбери ситуацию: откроется пошаговый план с командами.</p>
-  <div class="sit">
-    <a href="#sit" data-gosit="pvp"><div class="e">⚔️</div><b>Кого-то убили</b><span>кто, когда, где, согласие → вернуть вещи → jail 5m</span></a>
-    <a href="#sit" data-gosit="death"><div class="e">💀</div><b>Умер и потерял вещи</b><span>/back → откат инвентаря → вручную</span></a>
-    <a href="#sit" data-gosit="grief"><div class="e">🏚️</div><b>Сломали чужой дом</b><span>/co i → откат → jail 20m</span></a>
-    <a href="#sit" data-gosit="theft"><div class="e">💎</div><b>Украли из сундука / шалкеры</b><span>ПКМ лупой → /invsee → jail 15m</span></a>
-    <a href="#sit" data-gosit="xray"><div class="e">🕵️</div><b>Подозрение на X-ray</b><span>сколько руды и камня → /gm 3</span></a>
-    <a href="#sit" data-gosit="spam"><div class="e">📢</div><b>Спамит в чат</b><span>#count → mute 10m + jail 10m</span></a>
-    <a href="#sit" data-gosit="insult"><div class="e">🤬</div><b>Оскорбляет</b><span>проверить чат → mute 1h</span></a>
-    <a href="#sit" data-gosit="ads"><div class="e">🔗</div><b>Реклама</b><span>скрин → ban</span></a>
-    <a href="#sit" data-gosit="build"><div class="e">🚫</div><b>Непристойная постройка</b><span>убрать откатом → jail 10m</span></a>
-    <a href="#sit" data-gosit="escape"><div class="e">🏃</div><b>Сбежал из тюрьмы</b><span>+15 минут</span></a>
-    <a href="#sit" data-gosit="event"><div class="e">🎉</div><b>Срывает ивент</b><span>jail 5m</span></a>
-    <a href="#sit" data-gosit="boom"><div class="e">💥</div><b>Взрыв или пожар</b><span>#tnt, #creeper, #fire → откат</span></a>
-  </div>
-
-  <div class="three">
-    <div class="card"><h3>🔎 Найти</h3><p class="small" style="margin:0"><code>/co i</code>, <code>/co near</code>, <code>/co l</code>: кто сломал, взял, написал.</p></div>
-    <div class="card"><h3>⚖️ Наказать</h3><p class="small" style="margin:0"><code>/mute</code>, <code>/jail</code>, <code>/kick</code>, <code>/ban</code>. Сроки берутся из книги законов.</p></div>
-    <div class="card"><h3>👁️ Следить</h3><p class="small" style="margin:0"><code>/gm 3</code> (наблюдатель), <code>/tp</code>: незаметно посмотреть за игроком.</p></div>
-  </div>
-
-  <h2 style="margin-top:30px">Пришла жалоба: 5 шагов</h2>
-  <div class="flow">
-    <div class="st"><b>Прийти</b><pre>/tp Ник</pre><p class="small">или телепорт к месту</p></div>
-    <div class="st"><b>Найти, кто это</b><pre>/co i</pre><p class="small">кликни по 2–3 дырам</p></div>
-    <div class="st"><b>Доказательства</b><pre>/co l u:Ник t:1d r:40 a:-block</pre><p class="small">скриншот (F2)</p></div>
-    <div class="st"><b>Наказать</b><pre>/jail Ник 1 20m</pre><p class="small">срок из законов</p></div>
-    <div class="st"><b>Откатить гриф</b><pre>/co rollback u:Ник t:1d r:40 #preview</pre><p class="small">проверил → та же команда без #preview</p></div>
+  <h2 style="margin-top:18px">Главное за 1 минуту</h2>
+  <div class="grid">
+    <div class="card key red"><h3><span class="n">1</span>#preview — только для блоков</h3>
+      <p>Для сундуков и инвентаря превью запрещено самим плагином. Вместо него сначала делай <code>/co l</code> с теми же параметрами: что покажет поиск, то и откатится.</p>
+      <span class="msg">You can't preview inventory transactions.</span><span class="msg">You can't preview container transactions.</span></div>
+    <div class="card key red"><h3><span class="n">2</span>Откат инвентаря: игрок онлайн и u:Ник</h3>
+      <p>Вещи возвращаются прямо в инвентарь игрока, поэтому он должен быть <b>на сервере</b>, а в команде обязательно <code>u:Ник</code>. Нужно свободное место в инвентаре.</p>
+      <span class="msg">The user "Ник" is not online.</span><span class="msg">To use that action, please specify a user.</span></div>
+    <div class="card key blue"><h3><span class="n">3</span>Координаты — через a:-item</h3>
+      <p><code>a:-inventory</code> никогда не показывает координаты. <code>a:-item</code>, <code>a:kill</code>, <code>a:-block</code> и другие показывают строку <code>^ (x/y/z/world)</code>, по ней можно кликнуть для телепорта.</p></div>
+    <div class="card key"><h3><span class="n">4</span>Радиус</h3>
+      <p>Без <code>r:</code> обычный откат идёт в <b>10 блоках</b> от тебя. Для инвентаря радиус сам <b>не ставится</b> — откатится всё за это время, поэтому стой на месте и пиши <code>r:3</code>. Больше <b>100</b> нельзя, для всего сервера — <code>r:#global</code> (только с <code>u:</code>).</p>
+      <span class="msg">The maximum rollback radius is 100.</span></div>
+    <div class="card key green"><h3><span class="n">5</span>Зачёркнуто = уже откатано</h3>
+      <p>Если строка в ответе <s>зачёркнута</s>, это действие уже откатили. Второй раз откатывать не нужно.</p></div>
+    <div class="card key red"><h3><span class="n">6</span>Откат не забирает у того, кто подобрал</h3>
+      <p>Вернул вещи владельцу, а их кто-то уже подобрал — вещи будут у двоих (дюп). Сначала проверь, кто подбирал: <code>a:+item</code>.</p></div>
+    <div class="card key red"><h3><span class="n">7</span>Это откатить нельзя</h3>
+      <p>Чат, команды, входы/выходы, ники, нажатия и <code>a:item</code> — только для поиска. Откатывать можно блоки, сундуки, инвентарь, убитых мобов и таблички.</p>
+      <span class="msg">That action is not supported by the command.</span></div>
+    <div class="card key blue"><h3><span class="n">8</span>Поиску нужен u:, r: или i: и время</h3>
+      <p>Пиши хотя бы что-то одно из <code>u:</code>, <code>r:</code>, <code>i:</code>. Если нет <code>r:</code>, обязательно <code>t:</code>.</p>
+      <span class="msg">Please specify a user or radius to lookup.</span><span class="msg">Please specify the amount of time to lookup.</span></div>
+    <div class="card key green"><h3><span class="n">9</span>Ошибся — /co undo</h3>
+      <p><code>/co undo</code> отменяет последний откат целиком. <code>/co cancel</code> отменяет превью.</p></div>
   </div>
 </section>
 
-
-
-<!-- ===================== SITUATIONS ===================== -->
-<section class="page" id="p-sit">
-  <h2>🚨 Что делать, если…</h2>
-  <p class="lead">Выбери ситуацию: откроется пошаговый план — что проверить, как вернуть и как наказать. У каждой команды есть кнопка «Копировать».</p>
-  <div class="sitlay">
-    <div id="sitList"></div>
-    <div class="sitpanel" id="sitBody"></div>
-  </div>
-  <h2 style="margin-top:34px">❓ Как узнать…</h2>
-  <p class="lead">Быстрые ответы на частые вопросы.</p>
-  <div class="faq" id="faq"></div>
+<!-- ======================= DEATH ======================= -->
+<section id="death">
+  <h2>💀 Игрок умер: координаты, убийца, вернуть вещи</h2>
+  <p class="lead">Самая частая ситуация. Делай по шагам. Пример: умер <b>Steve</b>, убил <b>Alex</b>.</p>
+  <div class="steps" id="deathSteps"></div>
 </section>
 
-<!-- ===================== BOOK ===================== -->
-<section class="page" id="p-book">
-  <h2>📖 Книга «CoreProtect — команды для модераторов»</h2>
-  <p class="lead">Все 11 страниц твоей книги из игры. Листай стрелками (или ← → на клавиатуре). Справа подробное объяснение и кнопка «Копировать». По команде в книге тоже можно кликнуть, она скопируется.</p>
-  <div class="bookwrap">
-    <div class="bookcol">
-      <div class="mcbook" id="mcbook"></div>
-      <div class="bnav" id="bnav"></div>
-      <div class="small muted" style="text-align:center"><span class="cat k-find">🔎 Найти</span> синяя полоска · <span class="cat k-rollback">⏪ Откат</span> зелёная полоска</div>
-    </div>
-    <div class="bside">
-      <div id="bkSide"></div>
-    </div>
-  </div>
+<!-- ======================= SITUATIONS ======================= -->
+<section id="sit">
+  <h2>🚨 Все ситуации</h2>
+  <p class="lead">Нажми на ситуацию — откроется план по шагам.</p>
+  <div class="sitctl"><button class="btn" type="button" id="openAll">Открыть все</button><button class="btn" type="button" id="closeAll">Закрыть все</button></div>
+  <div id="sitBox"></div>
 </section>
 
-<!-- ===================== SIMULATOR ===================== -->
-<section class="page" id="p-sim">
-  <h2>🎮 Симулятор команд</h2>
-  <p class="lead">Нажми на команду: справа появится, как её писать, а сцена покажет, что происходит в игре. Тюрьма всегда <b>1</b>.</p>
-  <div class="groups" id="groups"></div>
-  <div class="stage">
-    <div class="left">
-      <div class="wwrap" id="wwrap"><div class="world" id="world" aria-live="polite">
-        <div class="gnd"></div>
-        <div id="house"></div>
-        <div class="tnt" id="tnt" style="left:250px;bottom:46px"></div>
-        <div class="chestS"></div>
-        <div class="gem" id="gem"></div>
-        <div class="who" id="steve" style="left:-60px"><div class="lab" style="color:#8fd3ff">Steve</div><div class="hd"></div><div class="bd"></div><div class="lg"></div></div>
-        <div class="who" id="you" style="left:-60px"><div class="lab" id="youLab">Ты</div><div class="hd"></div><div class="bd"></div><div class="lg"></div></div>
-        <div class="who" id="admin" style="left:-60px"><div class="lab" style="color:#ffd166">Админ</div><div class="hd"></div><div class="bd"></div><div class="lg"></div></div>
-        <div id="bars"></div>
-        <div id="ring"></div>
-        <div id="mag">🔍</div><div id="hammer">🔨</div><div id="boot">🥾</div>
-        <div id="say"></div>
-        <div id="bigtxt"></div>
-        <div id="inv"><div class="ttl">Steve — инвентарь</div><div class="sl"><div>💎</div><div>💎</div><div>⚔️</div><div>🧨</div><div>🍞</div><div></div><div>🪓</div><div></div><div>🧱</div><div>🧱</div><div></div><div>🔥</div></div></div>
-        <div class="chat"><div id="lines"></div><div class="inp" id="inp"></div></div>
-      </div></div>
-      <div class="cap"><div class="num" id="sNum">1/4</div><div class="txt" id="sCap">…</div><button class="rp" id="replay" type="button">↻ Сначала</button></div>
-      <div class="dots" id="dots"></div>
-    </div>
-    <div class="right">
-      <div><span class="stitle" id="sTitle"></span> <span id="sBadge"></span></div>
-      <div class="syntax" id="sSyn"></div>
-      <div class="sexp" id="sExp"></div>
-      <div class="exlist" id="sEx"></div>
-    </div>
+<!-- ======================= READ ======================= -->
+<section id="read">
+  <h2>📖 Как читать ответ CoreProtect</h2>
+  <p class="lead">Так выглядит ответ в чате. Каждая часть объяснена ниже.</p>
+  <div class="mc" aria-label="Пример ответа CoreProtect">
+    <div><span class="h">----- </span><span class="h">CoreProtect</span><span class="t"> | </span><span class="h">Lookup Results</span><span class="h"> -----</span></div>
+    <div><span class="t">0.42/h ago </span><span class="m">-</span><span class="u"> Steve</span><span class="t"> dropped x1 </span><span class="u">netherite_boots</span><span class="t">.</span></div>
+    <div><span class="g">            ^ </span><span class="gi">(x120/y64/z-340/world)</span></div>
+    <div><span class="t">0.40/h ago </span><span class="p">+</span><span class="u"> Alex</span><span class="t"> picked up x1 </span><span class="u">netherite_boots</span><span class="t">.</span></div>
+    <div><span class="g">            ^ </span><span class="gi">(x121/y64/z-340/world)</span></div>
+    <div><span class="t">26.23/m ago </span><span class="m">-</span><span class="u"> <s>Steve</s></span><span class="t"><s> removed x27 </s></span><span class="u"><s>torch</s></span><span class="t">.</span></div>
+    <div><span class="h">◀ Page 1/3 ▶</span></div>
   </div>
+  <div class="tbl"><table>
+    <tr><th>Что видишь</th><th>Что значит</th></tr>
+    <tr><td><code>0.42/h ago</code></td><td>Сколько прошло: <b>/m</b> — минуты, <b>/h</b> — часы, <b>/d</b> — дни. <code>26.23/m</code> = 26 минут назад, <code>0.42/h</code> ≈ 25 минут, <code>1.50/h</code> = полтора часа.</td></tr>
+    <tr><td><b style="color:#55ff55">+</b> / <b style="color:#ff5555">-</b></td><td>Плюс — добавил (поставил, подобрал, положил). Минус — убрал (сломал, выкинул, взял, убил).</td></tr>
+    <tr><td><code>^ (x120/y64/z-340/world)</code></td><td>Координаты и мир. <b>Кликни по ним</b> — телепортирует (нужно право <code>coreprotect.teleport</code>). В ответах <code>a:inventory</code> этой строки нет.</td></tr>
+    <tr><td><s>зачёркнуто</s></td><td>Уже откатано. Повторно откатывать не нужно.</td></tr>
+    <tr><td><code>◀ Page 1/3 ▶</code></td><td>Есть ещё страницы. Кликни стрелку или напиши <code>/co l 2</code>. Больше строк на странице: <code>/co l 1:20</code>.</td></tr>
+    <tr><td><code>(a:block)</code> курсивом</td><td>Появляется, если ты не писал <code>a:</code>: подсказывает, какое это действие.</td></tr>
+  </table></div>
+  <h3 style="margin-top:16px">Слова в ответе</h3>
+  <div class="tbl"><table>
+    <tr><th>Слово</th><th>Значит</th><th>Ищется через</th></tr>
+    <tr><td><code>broke</code> / <code>placed</code></td><td>сломал / поставил блок</td><td><code>a:-block</code> / <code>a:+block</code></td></tr>
+    <tr><td><code>removed</code> / <code>added</code></td><td>взял из / положил в сундук. В <code>a:inventory</code> так же показаны вещи, пропавшие при смерти</td><td><code>a:container</code>, <code>a:inventory</code></td></tr>
+    <tr><td><code>dropped</code> / <code>picked up</code></td><td>выкинул (или выпало при смерти) / подобрал с земли</td><td><code>a:-item</code> / <code>a:+item</code></td></tr>
+    <tr><td><code>threw</code> / <code>shot</code></td><td>бросил (жемчуг, снежок, трезубец) / выстрелил</td><td><code>a:-item</code></td></tr>
+    <tr><td><code>deposited</code> / <code>withdrew</code></td><td>положил в / взял из <b>эндер-сундука</b></td><td><code>a:-item</code> / <code>a:+item</code></td></tr>
+    <tr><td><code>killed</code></td><td>убил моба, животное или <b>игрока</b>. Если не игрок: <code>#zombie</code>, <code>#lava</code>, <code>#fall</code>…</td><td><code>a:kill</code></td></tr>
+    <tr><td><code>clicked</code></td><td>нажал дверь, кнопку, рычаг</td><td><code>a:click</code></td></tr>
+    <tr><td><code>logged in</code> / <code>logged out</code></td><td>зашёл / вышел с сервера</td><td><code>a:session</code></td></tr>
+    <tr><td><code>logged in as</code></td><td>под каким ником заходил раньше</td><td><code>a:username</code></td></tr>
+    <tr><td><code>Ник: текст</code></td><td>сообщение в чате или команда</td><td><code>a:chat</code>, <code>a:command</code></td></tr>
+  </table></div>
 </section>
 
-<!-- ===================== FILTER ===================== -->
-<section class="page" id="p-filter">
-  <h2>🎚️ Фильтр <code>a:</code> — какое действие</h2>
-  <p class="lead"><b>a: — это фильтр</b> в команде <code>/co lookup</code>. Без него видно всё подряд, с ним только нужное. Нажимай кнопки.</p>
-  <div class="filt">
-    <div class="fcmd" id="fCmd">/co l u:Steve t:1h</div>
-    <div class="chips" id="chips"></div>
-    <div class="rows" id="rows"></div>
-    <div class="fres" id="fRes"></div>
-  </div>
-  <div class="g2" style="margin-top:16px">
-    <div class="card"><h3>Знак перед словом</h3>
-      <p class="small" style="margin:0"><b style="color:#a6e38c">+</b> добавил: поставил, положил, подобрал, зашёл<br><b style="color:#ff8f86">−</b> убрал: сломал, взял, выкинул, вышел<br><b>без знака</b>: и то, и другое</p></div>
-    <div class="card"><h3>Другие части команды</h3>
-      <p class="small" style="margin:0"><code>u:</code> кто · <code>t:</code> сколько времени назад (<code>10m</code>, <code>2h</code>, <code>3d</code>) · <code>r:</code> радиус от тебя · <code>i:</code> только этот блок · <code>#count</code> только количество</p></div>
-  </div>
-  <h2 style="margin-top:34px">🧱 Фильтры <code>i:</code> и <code>e:</code> — какие блоки</h2>
-  <p class="lead"><b>i:</b> (include) — показать <b>только</b> эти блоки. <b>e:</b> (exclude) — показать всё, <b>кроме</b> этих. Пример: Steve за час сломал всё, что ниже. Нажимай кнопки.</p>
-  <div class="filt">
-    <div class="fcmd" id="ieCmd">/co l u:Steve t:1h a:-block</div>
-    <div class="chips" id="ieChips"></div>
-    <div class="rows" id="ieRows"></div>
-    <div class="fres" id="ieRes"></div>
-  </div>
-  <div class="g2" style="margin-top:16px">
-    <div class="card"><h3>Как запомнить</h3><p class="small" style="margin:0"><code>i:</code> = «покажи <b>только</b> это» · <code>e:</code> = «<b>убери</b> это».<br>Несколько блоков — через запятую без пробелов: <code>i:tnt,lava</code>.<br><code>e:</code> умеет убирать и игроков: <code>e:Steve</code>.</p></div>
-    <div class="card"><h3>А раньше было <code>b:</code>?</h3><p class="small" style="margin:0">Да, в старых версиях CoreProtect был <code>b:</code> (block). В версии 20 его переименовали в <code>i:</code>, потому что теперь он работает и с предметами, и с мобами. Пиши <code>i:</code>. Названия блоков — по-английски, как в игре (F3+H покажет).</p></div>
-  </div>
-
+<!-- ======================= ERRORS ======================= -->
+<section id="errors">
+  <h2>⚠️ Ошибки и что делать</h2>
+  <p class="lead">Точные тексты сообщений CoreProtect (из файла языка плагина) и как их исправить.</p>
+  <div class="tbl"><table id="errTbl"><tr><th>Сообщение</th><th>Почему</th><th>Что делать</th></tr></table></div>
 </section>
 
-<!-- ===================== RULES ===================== -->
-<section class="page" id="p-rules">
-  <h2>⚖️ Законы TolSMP: проверка и наказание</h2>
-  <p class="lead">Для каждого закона: чем проверить и как наказать. Вместо <code>Ник</code> впиши ник нарушителя. Тюрьма всегда <b>1</b>.</p>
-  <div class="rules" id="rulesBox"></div>
+<!-- ======================= PARAMS ======================= -->
+<section id="params">
+  <h2>🎚️ Параметры и действия</h2>
+  <div class="tbl"><table>
+    <tr><th>Параметр</th><th>Что значит</th><th>Примеры</th></tr>
+    <tr><td><code>u:</code></td><td>Кто. Несколько — через запятую. Особые: <code>#tnt</code>, <code>#creeper</code>, <code>#explosion</code>, <code>#fire</code>, <code>#lava</code>, <code>#zombie</code>…</td><td><code>u:Steve</code> <code>u:Steve,Alex</code> <code>u:#tnt</code></td></tr>
+    <tr><td><code>t:</code></td><td>Сколько времени назад: <b>s</b> секунды, <b>m</b> минуты, <b>h</b> часы, <b>d</b> дни, <b>w</b> недели. Можно складывать.</td><td><code>t:30m</code> <code>t:2h</code> <code>t:1d6h</code> <code>t:1h-2h</code> <code>t:2.5h</code></td></tr>
+    <tr><td><code>r:</code></td><td>Радиус от тебя (максимум 100) или мир.</td><td><code>r:3</code> <code>r:20</code> <code>r:#world_nether</code> <code>r:#global</code> <code>r:#we</code></td></tr>
+    <tr><td><code>a:</code></td><td>Действие. <b>+</b> добавил, <b>-</b> убрал, без знака — оба.</td><td><code>a:-block</code> <code>a:container</code> <code>a:-item</code> <code>a:kill</code></td></tr>
+    <tr><td><code>i:</code></td><td>Только эти блоки, предметы или мобы (раньше было <code>b:</code>).</td><td><code>i:tnt</code> <code>i:diamond_ore,deepslate_diamond_ore</code></td></tr>
+    <tr><td><code>e:</code></td><td>Всё, кроме этих блоков или игроков.</td><td><code>e:dirt,grass_block</code> <code>e:Steve</code></td></tr>
+    <tr><td><code>#preview</code></td><td>Показать откат только себе. Только блоки.</td><td><code>/co rollback u:Ник r:20 t:1h #preview</code></td></tr>
+    <tr><td><code>#count</code></td><td>Только число найденных строк.</td><td><code>/co l u:Ник a:chat t:5m #count</code></td></tr>
+    <tr><td><code>#verbose</code> · <code>#silent</code></td><td>Подробный / короткий отчёт при откате.</td><td></td></tr>
+  </table></div>
+  <h3 style="margin-top:16px">Действия: что можно откатить</h3>
+  <div class="tbl"><table>
+    <tr><th>a:</th><th>Что это</th><th>Откат</th><th>#preview</th><th>Координаты в ответе</th></tr>
+    <tr><td><code>block</code> <code>+block</code> <code>-block</code></td><td>поставил / сломал блок</td><td class="y">да</td><td class="y">да</td><td class="y">да</td></tr>
+    <tr><td><code>container</code> <code>+container</code> <code>-container</code></td><td>положил / взял из сундука, бочки, шалкера, печки</td><td class="y">да</td><td class="n">нет</td><td class="y">да</td></tr>
+    <tr><td><code>inventory</code> <code>+inventory</code> <code>-inventory</code></td><td>вещи игрока (в том числе выпавшие при смерти)</td><td class="y">да*</td><td class="n">нет</td><td class="n">нет</td></tr>
+    <tr><td><code>item</code> <code>+item</code> <code>-item</code></td><td>подобрал / выкинул / бросил / эндер-сундук</td><td class="n">нет</td><td>—</td><td class="y">да</td></tr>
+    <tr><td><code>kill</code></td><td>убил моба, животное или игрока</td><td class="y">да (мобы)</td><td>—</td><td class="y">да</td></tr>
+    <tr><td><code>sign</code></td><td>текст на табличках</td><td class="y">да</td><td>—</td><td class="y">да</td></tr>
+    <tr><td><code>click</code></td><td>двери, кнопки, рычаги</td><td class="n">нет</td><td>—</td><td class="y">да</td></tr>
+    <tr><td><code>session</code> <code>+session</code> <code>-session</code></td><td>вход / выход</td><td class="n">нет</td><td>—</td><td class="y">да</td></tr>
+    <tr><td><code>chat</code> · <code>command</code></td><td>чат и команды (нельзя вместе с <code>i:</code>/<code>e:</code>)</td><td class="n">нет</td><td>—</td><td>—</td></tr>
+    <tr><td><code>username</code></td><td>старые ники (нельзя с <code>r:</code>)</td><td class="n">нет</td><td>—</td><td class="n">нет</td></tr>
+  </table></div>
+  <p class="small muted">* Откат инвентаря: только с <code>u:Ник</code> и только если игрок онлайн.</p>
 </section>
 
-<!-- ===================== BUILDER ===================== -->
-<section class="page" id="p-builder">
-  <h2>🛠️ Конструктор команд</h2>
-  <p class="lead">Выбери, что нужно, и скопируй готовую команду.</p>
-  <div class="seg" id="seg"><button type="button" data-m="co" class="on">🔎 Поиск (CoreProtect)</button><button type="button" data-m="pun">⚖️ Наказание</button></div>
-
-  <div class="builder" id="bCo">
-    <div class="fields">
-      <div><label for="bNick">Ник (можно пусто)</label><input id="bNick" placeholder="Steve" autocomplete="off"></div>
-      <div><label for="bAct">Что ищем (a:)</label>
-        <select id="bAct">
-          <option value="">всё подряд</option>
-          <option value="-block" selected>сломал блоки → гриф</option>
-          <option value="+block">поставил блоки</option>
-          <option value="-container">взял из сундука → воровство</option>
-          <option value="+container">положил в сундук</option>
-          <option value="+item">подобрал с земли</option>
-          <option value="-item">выкинул предмет</option>
-          <option value="chat">чат → спам, мат, реклама</option>
-          <option value="command">команды</option>
-          <option value="click">двери/кнопки/рычаги</option>
-          <option value="kill">убил мобов</option>
-          <option value="session">заходы/выходы</option>
-          <option value="sign">таблички</option>
+<!-- ======================= BUILDER ======================= -->
+<section id="builder">
+  <h2>🛠️ Конструктор команды</h2>
+  <p class="lead">Выбери, что нужно. Сайт соберёт команду и проверит её по тем же правилам, что и плагин, — покажет ошибку до того, как ты её введёшь.</p>
+  <div class="seg" role="tablist" id="mode"><button type="button" data-m="l" class="on">Поиск</button><button type="button" data-m="rb">Откат</button><button type="button" data-m="rs">Restore</button></div>
+  <div class="bld">
+    <div class="card">
+      <div class="fields">
+        <div><label for="bU">Ник (u:)</label><input type="text" id="bU" placeholder="Steve" autocomplete="off"></div>
+        <div><label for="bA">Действие (a:)</label><select id="bA">
+          <option value="">— все действия —</option>
+          <option value="-block" selected>-block — сломал блоки</option>
+          <option value="+block">+block — поставил блоки</option>
+          <option value="block">block — поставил и сломал</option>
+          <option value="-container">-container — взял из сундука</option>
+          <option value="+container">+container — положил в сундук</option>
+          <option value="container">container — сундуки (всё)</option>
+          <option value="-inventory">-inventory — вещи после смерти</option>
+          <option value="+inventory">+inventory — что попало в инвентарь</option>
+          <option value="-item">-item — выкинул / выпало при смерти</option>
+          <option value="+item">+item — подобрал</option>
+          <option value="kill">kill — кто кого убил</option>
+          <option value="chat">chat — чат</option>
+          <option value="command">command — команды</option>
+          <option value="click">click — нажатия</option>
+          <option value="session">session — входы и выходы</option>
+          <option value="username">username — старые ники</option>
+          <option value="sign">sign — таблички</option>
         </select></div>
-      <div><label for="bTime">За какое время (t:)</label>
-        <select id="bTime"><option value="5m">5 минут</option><option value="30m">30 минут</option><option value="1h">1 час</option><option value="6h">6 часов</option><option value="1d" selected>1 день</option><option value="3d">3 дня</option><option value="1w">неделя</option><option value="">всё время</option></select></div>
-      <div><label for="bRad">Где (r:)</label>
-        <select id="bRad"><option value="">весь сервер</option><option value="10">10 блоков от меня</option><option value="20" selected>20 блоков от меня</option><option value="50">50 блоков от меня</option></select></div>
+        <div><label for="bT">Время (t:)</label><select id="bT"><option value="">— не писать —</option><option>5m</option><option>15m</option><option>30m</option><option selected>1h</option><option>6h</option><option>1d</option><option>3d</option><option>7d</option><option>30d</option></select></div>
+        <div><label for="bR">Радиус (r:)</label><select id="bR"><option value="">— не писать —</option><option>1</option><option>3</option><option>5</option><option>10</option><option selected>20</option><option>50</option><option>100</option><option value="#global">#global — весь сервер</option><option value="#world">#world — обычный мир</option><option value="#world_nether">#world_nether — Незер</option><option value="#world_the_end">#world_the_end — Энд</option></select></div>
+        <div><label for="bI">Только блоки (i:)</label><input type="text" id="bI" placeholder="oak_planks,glass" autocomplete="off"></div>
+        <div><label for="bE">Кроме (e:)</label><input type="text" id="bE" placeholder="dirt,grass_block" autocomplete="off"></div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:6px">
+        <label class="chk"><input type="checkbox" id="bP"> #preview</label>
+        <label class="chk"><input type="checkbox" id="bC"> #count</label>
+      </div>
     </div>
-    <div class="out"><pre id="bOut">/co l</pre><button class="btn" data-copy="bOut" type="button">Копировать</button></div>
-    <div class="bexp" id="bExp"></div>
-  </div>
-
-  <div class="builder" id="bPun" style="display:none">
-    <div class="fields">
-      <div><label for="pNick">Ник</label><input id="pNick" placeholder="Steve" autocomplete="off"></div>
-      <div><label for="pType">Наказание</label>
-        <select id="pType">
-          <option value="jail" selected>Тюрьма (jail)</option>
-          <option value="mute">Мут (mute)</option>
-          <option value="kick">Кик (kick)</option>
-          <option value="tempban">Временный бан (tempban)</option>
-          <option value="ban">Бан навсегда (ban)</option>
-          <option value="unjail">Выпустить из тюрьмы</option>
-          <option value="unmute">Снять мут</option>
-          <option value="unban">Разбанить</option>
-        </select></div>
-      <div id="fTime"><label for="pTime">Срок</label>
-        <select id="pTime"><option value="5m">5 минут</option><option value="10m">10 минут</option><option value="15m">15 минут</option><option value="20m" selected>20 минут</option><option value="30m">30 минут</option><option value="1h">1 час</option><option value="1d">1 день</option><option value="7d">7 дней</option></select></div>
-      <div id="fReason"><label for="pReason">Причина</label><input id="pReason" placeholder="Гриф §1.2" autocomplete="off"></div>
+    <div class="card out">
+      <h3 id="oTitle">Команда</h3>
+      <div class="cmds" id="oCmds"></div>
+      <div class="verdict" id="oV"></div>
     </div>
-    <div class="out"><pre id="pOut"></pre><button class="btn" data-copy="pOut" type="button">Копировать</button></div>
-    <div class="bexp" id="pExp"></div>
   </div>
 </section>
 
-<!-- ===================== ALL ===================== -->
-<section class="page" id="p-all">
-  <h2>📋 Все команды в одной таблице</h2>
-  <p class="lead">Все команды сайта в одной таблице.</p>
-  <div class="tbl"><table id="allTbl"><tr><th>Команда</th><th>Тип</th><th>Как писать</th><th>Что делает</th></tr></table></div>
-  <div class="g2" style="margin-top:16px">
-    <div class="card"><h3>⏱️ Как писать время</h3><p class="small" style="margin:0"><b>Essentials</b> (mute, jail, tempban): <code>30s</code> секунды, <code>10m</code> минуты, <code>1h</code> часы, <code>1d</code> дни, <code>1w</code> недели, <code>1mo</code> месяцы.<br><b>CoreProtect</b> (t:): <code>s</code> <code>m</code> <code>h</code> <code>d</code> <code>w</code>, например <code>t:2h</code>.</p></div>
-    <div class="card"><h3>🔁 Как снять наказание</h3><p class="small" style="margin:0"><code>/unmute Ник</code> снимает мут · <code>/unjail Ник</code> выпускает из тюрьмы · <code>/unban Ник</code> разбанивает · <code>/gm 0</code> возвращает выживание.</p></div>
-  </div>
+<!-- ======================= ALL COMMANDS ======================= -->
+<section id="cmds">
+  <h2>📋 Все команды</h2>
+  <p class="lead">Поиск сверху тоже ищет по этому списку.</p>
+  <div id="cmdBox"></div>
 </section>
 
+<!-- ======================= LAWS ======================= -->
+<section id="laws">
+  <h2>⚖️ Законы TolSMP и наказания</h2>
+  <p class="lead">Из книг «Законы сервера» и «Сроки тюрьмы». Тюрьма — <b>1</b>.</p>
+  <div class="laws" id="lawBox"></div>
+</section>
+
+<!-- ======================= ADMIN ======================= -->
+<section id="admin">
+  <h2>🔐 Права, настройки, версия</h2>
+  <div class="g2">
+    <div class="card">
+      <h3>Версия плагина</h3>
+      <p>Последний выпуск на GitHub — <b>CoreProtect CE v24.1</b>. Свою версию смотри командой:</p>
+      <div class="cmds" data-cmds='[["/co status","версия и состояние базы"]]'></div>
+      <p class="small muted">Если версия ниже 24 — обнови: в 24.0 исправили ошибки превью и отката инвентаря. Скачать: <a href="https://github.com/PlayPro/CoreProtect/releases">github.com/PlayPro/CoreProtect/releases</a>, заменить .jar в папке <code>plugins</code> и перезапустить сервер.</p>
+    </div>
+    <div class="card">
+      <h3>Если что-то не записывается</h3>
+      <p>Открой <code>plugins/CoreProtect/config.yml</code>. Эти пункты должны быть <code>true</code> (так по умолчанию):</p>
+      <div class="tbl" style="margin:6px 0"><table>
+        <tr><th>Настройка</th><th>Что записывает</th></tr>
+        <tr><td><code>item-drops</code></td><td>выкинутые вещи и вещи при смерти</td></tr>
+        <tr><td><code>item-pickups</code></td><td>подобранные вещи</td></tr>
+        <tr><td><code>item-transactions</code></td><td>сундуки</td></tr>
+        <tr><td><code>entity-kills</code></td><td>убийства мобов и игроков</td></tr>
+        <tr><td><code>player-sessions</code></td><td>входы и выходы</td></tr>
+        <tr><td><code>rollback-items</code></td><td>вещи из сундуков при откате</td></tr>
+      </table></div>
+      <p class="small muted">Там же <code>default-radius: 10</code> (радиус отката без r:) и <code>max-radius: 100</code>. После изменения — <code>/co reload</code>.</p>
+    </div>
+  </div>
+  <h3 style="margin-top:16px">Права (permissions)</h3>
+  <div class="tbl"><table>
+    <tr><th>Право</th><th>Что даёт</th></tr>
+    <tr><td><code>coreprotect.inspect</code></td><td>лупа <code>/co i</code></td></tr>
+    <tr><td><code>coreprotect.lookup</code></td><td>поиск <code>/co l</code>, <code>/co near</code></td></tr>
+    <tr><td><code>coreprotect.lookup.item</code> · <code>.inventory</code> · <code>.container</code> · <code>.kill</code> · <code>.chat</code> · <code>.command</code> · <code>.session</code> · <code>.username</code> · <code>.sign</code> · <code>.click</code> · <code>.block</code></td><td>отдельные виды поиска (по умолчанию у OP). Без них: <span class="msg" style="display:inline-block">You do not have permission to do that.</span></td></tr>
+    <tr><td><code>coreprotect.rollback</code> · <code>coreprotect.restore</code></td><td>откат и восстановление</td></tr>
+    <tr><td><code>coreprotect.teleport</code></td><td>клик по координатам в ответе</td></tr>
+    <tr><td><code>coreprotect.purge</code> · <code>.reload</code> · <code>.status</code> · <code>.consumer</code> · <code>.help</code></td><td>служебные команды</td></tr>
+  </table></div>
+</section>
+
+<footer>TolSMP · CoreProtect. Сверено с исходным кодом и документацией <a href="https://docs.coreprotect.net/commands/">CoreProtect</a> (версия 24.1) и EssentialsX. Старые версии сайта: <a href="archive/moder.html">для модеров</a> · <a href="archive/admin.html">админ</a>.</footer>
 </main>
-<footer>TolSMP · все команды. Команды по документации <a href="https://docs.coreprotect.net/commands/">CoreProtect</a> и EssentialsX.</footer>
-<div class="toast" id="toast">Скопировано ✔</div>
+</div>
+<div id="toast" role="status">Скопировано</div>
 
 <script>
 (function(){
 var $=function(id){return document.getElementById(id)};
-function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
 
 /* ---------- copy ---------- */
-function copy(txt){var ok=function(){var t=$('toast');t.classList.add('show');setTimeout(function(){t.classList.remove('show')},1200)};
-  try{navigator.clipboard.writeText(txt).then(ok,function(){fb(txt);ok()})}catch(e){fb(txt);ok()}}
-function fb(txt){try{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}catch(e){}}
-document.addEventListener('click',function(e){var b=e.target.closest('[data-copy]');if(b){copy($(b.dataset.copy).textContent)}var c=e.target.closest('[data-cp]');if(c){copy(c.dataset.cp)}});
-function exRow(cmd,note){return '<div class="ex"><span>'+esc(cmd)+(note?'<small>'+note+'</small>':'')+'</span><button class="cp" type="button" data-cp="'+esc(cmd)+'">Копировать</button></div>'}
+function copyText(t,btn){
+  var done=function(){if(btn){var o=btn.textContent;btn.textContent='✓ Скопировано';btn.classList.add('done');setTimeout(function(){btn.textContent=o;btn.classList.remove('done')},1300)}var x=$('toast');x.classList.add('on');setTimeout(function(){x.classList.remove('on')},1300)};
+  try{navigator.clipboard.writeText(t).then(done,function(){fb(t);done()})}catch(e){fb(t);done()}}
+function fb(t){try{var a=document.createElement('textarea');a.value=t;a.setAttribute('readonly','');a.style.position='fixed';a.style.left='-9999px';document.body.appendChild(a);a.select();document.execCommand('copy');a.remove()}catch(e){}}
+document.addEventListener('click',function(e){var b=e.target.closest('[data-cp]');if(b){copyText(b.getAttribute('data-cp'),b)}});
+function row(c,n){return '<div class="cmd"><div class="c"><b>'+esc(c)+'</b>'+(n?'<small>'+n+'</small>':'')+'</div><button class="cp" type="button" data-cp="'+esc(c)+'">Копировать</button></div>'}
+function rows(list){return '<div class="cmds">'+list.map(function(x){return row(x[0],x[1])}).join('')+'</div>'}
+[].forEach.call(document.querySelectorAll('[data-cmds]'),function(el){el.outerHTML=rows(JSON.parse(el.getAttribute('data-cmds')))});
 
-/* ---------- tabs ---------- */
-var pageName='home',jumpRule=null,pendingSim=null,pendingSit=null;
-function route(){var h=(location.hash||'#home').slice(1);if(!$('p-'+h))h='home';pageName=h;
-  [].forEach.call(document.querySelectorAll('section.page'),function(s){s.classList.toggle('on',s.id==='p-'+h)});
-  [].forEach.call(document.querySelectorAll('#tabs a'),function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+h)});
-  if(h==='sit'&&pendingSit){var q=pendingSit;pendingSit=null;sitShow(q)}
-  if(h==='sim'){fit();if(pendingSim){started=true;var ps=pendingSim;pendingSim=null;play(ps)}else if(!started){started=true;play('inspect')}}
-  if(jumpRule&&h==='rules'){var el=$(jumpRule);jumpRule=null;if(el){setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'center'});el.animate([{outline:'4px solid #7ccf5b'},{outline:'4px solid transparent'}],{duration:1600})},60)}}else window.scrollTo(0,0);
-}
-document.addEventListener('click',function(e){var a=e.target.closest('[data-rule]');if(a)jumpRule=a.dataset.rule});
-window.addEventListener('hashchange',route);
+/* chat mock helper: lines of [text,kind] */
+function mc(lines){return '<div class="mc">'+lines.map(function(l){return '<div>'+l+'</div>'}).join('')+'</div>'}
+var T=function(s){return '<span class="t">'+esc(s)+'</span>'},U=function(s){return '<span class="u">'+esc(s)+'</span>'},G=function(s){return '<span class="g">            ^ </span><span class="gi">'+esc(s)+'</span>'},P='<span class="p">+</span>',M='<span class="m">-</span>';
 
-/* ---------- world ---------- */
-var started=false;
-function fit(){var w=$('wwrap').clientWidth;if(!w)return;var k=w/760;$('world').style.transform='scale('+k+')';$('wwrap').style.height=(300*k)+'px'}
-window.addEventListener('resize',fit);
-var house=$('house'),HX=150,BW=30,blocks=[];
-for(var r=0;r<4;r++)for(var c=0;c<5;c++){var d=document.createElement('div');d.className='b'+((r===2&&(c===1||c===3))?' glass':'');d.style.left=(HX+c*BW)+'px';d.style.bottom=(46+r*BW)+'px';house.appendChild(d);blocks.push(d)}
-var GRIEF=[7,8,12,13,17,18];
-function bx(i){return HX+(i%5)*BW}function by(i){return 46+Math.floor(i/5)*BW}
-var token=0;function later(fn,ms){var t=token;setTimeout(function(){if(t===token)fn()},ms)}
-function snap(el){el.style.transition='none';void el.offsetWidth}
-function unsnap(el){void el.offsetWidth;el.style.transition=''}
-var W={
- reset:function(){
-  blocks.forEach(function(b){b.classList.remove('gone','flash')});
-  ['steve','you','admin'].forEach(function(id){var e=$(id);snap(e);e.style.left='-60px';e.style.opacity=1;e.style.transform='';e.classList.remove('ghost');unsnap(e)});
-  $('youLab').innerHTML='Ты';
-  var g=$('gem');snap(g);g.style.opacity=0;unsnap(g);
-  $('tnt').style.opacity=0;$('ring').className='';['mag','hammer','boot'].forEach(function(id){$(id).style.opacity=0;$(id).style.transform=''});
-  $('say').style.opacity=0;$('say').className='';snap($('bars'));$('bars').className='';unsnap($('bars'));$('bigtxt').className='';$('inv').className='';
-  $('lines').innerHTML='';$('inp').className='inp';$('inp').textContent='';
-  [].forEach.call(document.querySelectorAll('.puff'),function(p){p.remove()});
- },
- go:function(id,x){$(id).style.left=x+'px'},
- hide:function(id){$(id).style.opacity=0},
- grief:function(l){(l||GRIEF).forEach(function(i,k){later(function(){blocks[i].classList.add('gone')},k*180)})},
- fix:function(l){(l||GRIEF).forEach(function(i,k){later(function(){blocks[i].classList.remove('gone');blocks[i].classList.add('flash')},k*160)})},
- steal:function(){var g=$('gem');snap(g);g.style.left='551px';g.style.bottom='60px';g.style.opacity=1;unsnap(g);later(function(){g.style.left='470px';g.style.bottom='110px'},80);later(function(){g.style.opacity=0},1000)},
- tnt:function(){$('tnt').style.opacity=1},
- say:function(x,txt,blocked){var s=$('say');s.style.left=x+'px';s.style.bottom='140px';s.textContent=txt;s.className=blocked?'blocked':'';s.style.opacity=1;later(function(){s.style.opacity=0},1900)},
- ring:function(x){var r=$('ring');r.style.left=(x+13)+'px';r.style.bottom='20px';r.style.width='300px';r.style.height='300px';r.className='on'},
- mag:function(i){var m=$('mag');m.style.opacity=1;m.style.left=(bx(i)+6)+'px';m.style.top=(300-by(i)-34)+'px'},
- magFrom:function(x){var m=$('mag');snap(m);m.style.left=x+'px';m.style.top='180px';unsnap(m)},
- bars:function(x){var b=$('bars');snap(b);b.style.left=(x-19)+'px';unsnap(b);later(function(){b.className='on'},30)},
- hammer:function(x){var h=$('hammer');snap(h);h.style.left=(x+20)+'px';h.style.top='120px';h.style.transform='rotate(-40deg)';unsnap(h);h.style.opacity=1;later(function(){h.style.transform='rotate(30deg)'},300)},
- boot:function(x){var b=$('boot');snap(b);b.style.left=(x-40)+'px';b.style.top='210px';unsnap(b);b.style.opacity=1;later(function(){b.style.left=(x-8)+'px'},50)},
- big:function(t,color){var b=$('bigtxt');b.textContent=t;b.style.color=color||'#e5534b';b.className='on'},
- puff:function(x,y){for(var i=0;i<10;i++){var p=document.createElement('div');p.className='puff';p.style.left=(x+10)+'px';p.style.bottom=(y)+'px';p.style.setProperty('--dx',(Math.random()*60-30)+'px');p.style.setProperty('--dy',(Math.random()*-60)+'px');$('world').appendChild(p);(function(p){setTimeout(function(){p.remove()},900)})(p)}},
- type:function(txt,cb){var inp=$('inp');inp.className='inp on';inp.textContent='';var i=0;(function step(){if(i<=txt.length){inp.textContent=txt.slice(0,i);i++;later(step,50)}else later(function(){inp.className='inp';cb&&cb()},350)})()},
- chat:function(arr){var L=$('lines');arr.forEach(function(h,k){later(function(){var d=document.createElement('div');d.className='ln';d.innerHTML=h;L.appendChild(d);while(L.children.length>7)L.removeChild(L.firstChild)},k*230)})},
- clear:function(){$('lines').innerHTML=''}
-};
-fit();
+/* ---------- step renderer ---------- */
+function stepHTML(s){return '<div class="step"><h3>'+s.t+'</h3>'+(s.d?'<p>'+s.d+'</p>':'')+(s.c&&s.c.length?rows(s.c):'')+(s.mc?mc(s.mc):'')+(s.a?'<p class="small muted">'+s.a+'</p>':'')+(s.tip?'<div class="tip">💡 '+s.tip+'</div>':'')+(s.w?'<div class="warn">⚠️ '+s.w+'</div>':'')+(s.x?'<div class="danger">⛔ '+s.x+'</div>':'')+'</div>'}
 
-var H='<span class="c-x">-----</span> <span class="c-g">CoreProtect</span> <span class="c-x">-----</span>';
-function L(time,sign,who,verb,what){return '<span class="c-x">'+time+'</span> '+(sign==='+'?'<span class="c-g">+</span>':'<span class="c-r">-</span>')+' <span class="c-b">'+who+'</span> '+verb+' <span class="c-y">'+what+'</span>'}
-function SY(s){return s.replace(/&lt;(.*?)&gt;/g,'<i>&lt;$1&gt;</i>').replace(/\[(.*?)\]/g,'<u>[$1]</u>')}
-
-/* ---------- scenarios ---------- */
-var S={
- inspect:{t:'/co inspect',who:'find',syn:'/co i',
-  exp:'<b>Лупа.</b> Включил, кликнул по блоку и видишь, <b>кто</b> его сломал или поставил и <b>когда</b>. ЛКМ по блоку показывает его историю, ПКМ по сундуку показывает, кто брал вещи. Ещё раз <code>/co i</code> выключает лупу.',
-  ex:[['/co i','включить / выключить лупу']],
-  steps:[
-   ['Steve ломает чужой дом',function(){W.go('steve',330);later(function(){W.grief()},900)}],
-   ['Steve убегает. Ты приходишь на место',function(){W.go('steve',760);later(function(){W.hide('steve')},900);W.go('you',350)}],
-   ['Пишешь /co i, и включается лупа',function(){W.type('/co i',function(){W.chat(['<span class="c-g">CoreProtect</span> - Inspector now <span class="c-g">enabled</span>.'])})}],
-   ['Кликаешь лупой по дыре в стене',function(){W.magFrom(360);later(function(){W.mag(12)},50)}],
-   ['В чате видно, кто это сделал и когда',function(){W.clear();W.chat([H,L('0.04/h ago','-','Steve','broke','oak_planks'),'<span class="c-x">^ это 2 минуты назад</span>'])}]
-  ]},
- near:{t:'/co near',who:'find',syn:'/co near',
-  exp:'<b>Всё, что было рядом</b>, в радиусе 5 блоков вокруг тебя. Ник писать не нужно.',
-  ex:[['/co near','всё в 5 блоках от тебя']],
-  steps:[
-   ['Steve ломает стену и ставит TNT',function(){W.go('steve',330);later(function(){W.grief([12,13]);W.tnt()},900)}],
-   ['Ты приходишь и встаёшь рядом',function(){W.go('steve',760);later(function(){W.hide('steve')},900);W.go('you',300)}],
-   ['Пишешь /co near и смотришь круг в 5 блоков',function(){W.type('/co near',function(){W.ring(300)})}],
-   ['В чате все действия в этом круге',function(){W.chat([H,L('0.03/h ago','+','Steve','placed','tnt'),L('0.04/h ago','-','Steve','broke','oak_planks'),L('0.04/h ago','-','Steve','broke','glass')])}]
-  ]},
- lookup:{t:'/co lookup',who:'find',syn:'/co l u:&lt;ник&gt; t:&lt;время&gt; [a:действие] [r:радиус]',
-  exp:'<b>Поиск по всем записям</b> с любого места. <code>u:</code> кто, <code>t:</code> за сколько времени, <code>a:</code> какое действие (это фильтр), <code>r:</code> радиус.',
-  ex:[['/co l u:Steve t:1h','всё, что Steve делал за час'],['/co l u:Steve t:1d a:-block','что сломал за день'],['/co l u:Steve t:10m a:chat #count','сколько сообщений за 10 мин'],['/co l r:20 t:1h','все игроки в 20 блоках за час'],['/co l i:diamond_ore t:1d a:-block','кто копал алмазы (X-ray)'],['/co l u:Steve a:container t:1d','действия с сундуками'],['/co l u:Steve a:inventory t:1d','изменения инвентаря'],['/co l u:Steve a:session','входы и выходы'],['/co l u:Steve a:username','старые ники'],['/co l 2','следующая страница']],
-  steps:[
-   ['Steve ломает дом, крадёт алмазы и пишет в чат',function(){W.go('steve',330);later(function(){W.grief([12,13])},700);later(function(){W.go('steve',500)},1200);later(function(){W.steal()},2100)}],
-   ['Ты можешь быть где угодно',function(){W.say(470,'лол');W.go('steve',760);later(function(){W.hide('steve')},1000);W.go('you',40)}],
-   ['/co l u:Steve t:1h показывает всё за час',function(){W.type('/co l u:Steve t:1h',function(){W.chat([H,L('0.02/h ago','-','Steve','removed','12 diamond'),'<span class="c-x">0.03/h ago</span> <span class="c-b">Steve</span>: лол',L('0.05/h ago','-','Steve','broke','oak_planks'),L('0.05/h ago','-','Steve','broke','glass')])})}],
-   ['С a:-block остаются только сломанные блоки',function(){W.clear();W.type('/co l u:Steve t:1h a:-block',function(){W.chat([H,L('0.05/h ago','-','Steve','broke','oak_planks'),L('0.05/h ago','-','Steve','broke','glass')])})}]
-  ]},
-
- mute:{t:'/mute',who:'punish',syn:'/mute &lt;ник&gt; [время] [причина]',
-  exp:'<b>Запретить писать в чат.</b> Игрок может играть, но его сообщения никто не видит. Без времени мут навсегда. <code>/unmute Ник</code> снимает мут.',
-  ex:[['/mute Steve 10m Спам §1.8','спам: 10 минут'],['/mute Steve 1h Оскорбление §1.5','оскорбление: 1 час'],['/unmute Steve','снять мут']],
-  steps:[
-   ['Steve спамит в чат',function(){W.go('steve',330);W.go('you',120);later(function(){W.chat(['<span class="c-b">Steve</span> » КУПИТЕ КУПИТЕ','<span class="c-b">Steve</span> » КУПИТЕ КУПИТЕ','<span class="c-b">Steve</span> » КУПИТЕ КУПИТЕ'])},500)}],
-   ['Ты пишешь /mute Steve 10m Спам',function(){W.type('/mute Steve 10m Спам §1.8',function(){W.chat(['<span class="c-o">Steve muted for 10 minutes. Reason: Спам §1.8</span>'])})}],
-   ['Steve пытается писать, но чат закрыт',function(){W.say(330,'🔇 КУПИТЕ',true);W.chat(['<span class="c-r">(Steve) You are muted!</span>'])}]
-  ]},
- jail:{t:'/jail',who:'punish',syn:'/jail &lt;ник&gt; 1 [время]',
-  exp:'<b>Посадить в тюрьму.</b> Игрок телепортируется в тюрьму и сидит там, пока не выйдет срок. Тюрьма всегда <b>1</b>. Выпустить раньше срока: <code>/unjail Ник</code>.',
-  ex:[['/jail Steve 1 20m','гриф: 20 минут'],['/jail Steve 1 15m','воровство: 15 минут'],['/unjail Steve','выпустить']],
-  steps:[
-   ['Steve загриферил дом',function(){W.go('steve',330);later(function(){W.grief()},700)}],
-   ['Ты пишешь /jail Steve 1 20m',function(){W.go('you',100);W.type('/jail Steve 1 20m',function(){})}],
-   ['Сверху падает решётка, Steve в тюрьме',function(){W.go('steve',600);later(function(){W.bars(600);W.chat(['<span class="c-o">Steve jailed for 20 minutes.</span>'])},1000)}],
-   ['Выйти нельзя, пока не пройдёт срок',function(){W.say(600,'выпустите 😭')}]
-  ]},
- kick:{t:'/kick',who:'punish',syn:'/kick &lt;ник&gt; [причина]',
-  exp:'<b>Выкинуть с сервера.</b> Это не бан: игрок может сразу зайти снова. Подходит как предупреждение.',
-  ex:[['/kick Steve Последнее предупреждение','выкинуть с причиной']],
-  steps:[
-   ['Steve мешает ивенту',function(){W.go('steve',380);W.go('you',150);W.say(380,'бебебе')}],
-   ['Ты пишешь /kick Steve',function(){W.type('/kick Steve Последнее предупреждение',function(){})}],
-   ['Steve вылетает с сервера',function(){W.boot(380);later(function(){$('steve').style.transform='translate(260px,-260px) rotate(540deg)';$('steve').style.opacity=0},350);W.chat(['<span class="c-y">Steve left the game</span>'])}]
-  ]},
- tempban:{t:'/tempban',who:'punish',syn:'/tempban &lt;ник&gt; &lt;время&gt; [причина]',
-  exp:'<b>Бан на время.</b> Игрок не может зайти, пока не пройдёт срок, потом бан снимется сам.',
-  ex:[['/tempban Steve 1d Гриф повторно','бан на 1 день'],['/unban Steve','снять бан раньше']],
-  steps:[
-   ['Steve нарушает уже не первый раз',function(){W.go('steve',380);W.go('you',150)}],
-   ['Ты пишешь /tempban Steve 1d …',function(){W.type('/tempban Steve 1d Гриф повторно',function(){})}],
-   ['Steve пропадает с сервера на 1 день',function(){W.hammer(380);later(function(){W.hide('steve');W.big('BAN 1d','#ffd166')},500);W.chat(['<span class="c-o">Steve temporarily banned for 1 day.</span>'])}]
-  ]},
- ban:{t:'/ban',who:'punish',syn:'/ban &lt;ник&gt; [причина]',
-  exp:'<b>Бан навсегда.</b> Игрок больше не зайдёт. По законам TolSMP так наказывают за <b>рекламу (§1.9)</b>. Используй только с доказательствами.',
-  ex:[['/ban Steve Реклама §1.9','бан навсегда'],['/unban Steve','разбанить']],
-  steps:[
-   ['Steve рекламирует другой сервер',function(){W.go('steve',380);W.go('you',150);W.chat(['<span class="c-b">Steve</span> » заходите на мой сервер play.xxx.net'])}],
-   ['Проверяешь доказательства: /co l u:Steve a:chat',function(){W.type('/co l u:Steve t:1h a:chat',function(){W.chat([H,'<span class="c-x">0.01/h ago</span> <span class="c-b">Steve</span>: заходите на мой сервер…'])})}],
-   ['/ban Steve Реклама §1.9',function(){W.clear();W.type('/ban Steve Реклама §1.9',function(){})}],
-   ['Удар молотом, и Steve больше нет',function(){W.hammer(380);later(function(){W.hide('steve');W.big('BANNED')},500);W.chat(['<span class="c-r">Steve was banned. Reason: Реклама §1.9</span>'])}]
-  ]},
- gm3:{t:'/gm 3',who:'check',syn:'/gm 3   (выйти: /gm 0)',
-  exp:'<b>Режим наблюдателя (spectator).</b> Ты невидимка и летаешь сквозь стены. Можно незаметно смотреть, что делает подозреваемый. Если кликнуть по игроку, увидишь всё его глазами. Вернуться в выживание: <code>/gm 0</code>.',
-  ex:[['/gm 3','наблюдатель (spectator)'],['/gm 0','обратно в выживание'],['/gm 1','креатив (если есть права)']],
-  steps:[
-   ['Есть подозрение, что Steve гриферит',function(){W.go('steve',600);W.go('you',40)}],
-   ['/gm 3: ты становишься прозрачным',function(){W.type('/gm 3',function(){$('you').classList.add('ghost');$('youLab').innerHTML='👁 spectator';W.chat(['<span class="c-o">Set game mode spectator for you.</span>'])})}],
-   ['Летишь прямо сквозь дом, тебя не видно',function(){W.go('you',240);later(function(){W.go('you',520)},1100)}],
-   ['Смотришь за Steve, а потом /gm 0',function(){W.say(600,'никто не видит 😏');later(function(){W.type('/gm 0',function(){$('you').classList.remove('ghost');$('youLab').innerHTML='Ты'})},1200)}]
-  ]},
- vanish:{t:'/vanish',who:'check',syn:'/v',
-  exp:'<b>Невидимость</b> в обычном режиме: другие игроки тебя не видят, а ты можешь ходить и ломать. Ещё раз <code>/v</code> выключает. ',
-  ex:[['/v','включить / выключить невидимость']],
-  steps:[
-   ['Ты рядом со Steve, он тебя видит',function(){W.go('steve',520);W.go('you',380);W.say(520,'о, модер 😇')}],
-   ['/v: ты исчезаешь для других',function(){W.type('/v',function(){$('you').classList.add('ghost');W.chat(['<span class="c-o">Vanish enabled.</span>'])})}],
-   ['Steve думает, что никого нет',function(){W.say(520,'ну всё, ломаем 😈');later(function(){W.grief([13,18])},900)}]
-  ]},
- back:{t:'/back',who:'check',syn:'/back &lt;ник&gt;',
-  exp:'<b>Вернуть игрока на место смерти.</b> После смерти вещи лежат на земле 5 минут. <code>/back Ник</code> отправляет игрока туда, где он умер, и он успевает их подобрать.',
-  ex:[['/back Steve','на место смерти'],['/data get entity Steve LastDeathLocation','координаты смерти']],
-  steps:[
-   ['Steve упал и умер, вещи лежат на земле',function(){W.go('steve',600);later(function(){$('steve').style.transform='rotate(90deg) translateY(6px)';$('steve').style.opacity=0;var g=$('gem');snap(g);g.style.left='610px';g.style.bottom='50px';g.style.opacity=1;unsnap(g);W.chat(['<span class="c-x">Steve fell from a high place</span>'])},1100)}],
-   ['Steve возродился на спавне',function(){var e=$('steve');snap(e);e.style.left='40px';e.style.transform='';e.style.opacity=1;unsnap(e);W.say(40,'мои вещи 😭')}],
-   ['Пишешь /back Steve',function(){W.type('/back Steve',function(){})}],
-   ['Steve на месте смерти и забирает вещи',function(){W.puff(40,60);var e=$('steve');snap(e);e.style.left='600px';unsnap(e);W.puff(600,60);later(function(){$('gem').style.opacity=0;W.say(600,'спасибо 🙏')},700)}]
-  ]},
- tp:{t:'/tp',who:'check',syn:'/tp &lt;ник&gt;   ·   /tphere &lt;ник&gt;',
-  exp:'<b>Телепорт.</b> <code>/tp Ник</code> переносит тебя к игроку, <code>/tphere Ник</code> переносит игрока к тебе (если есть права).',
-  ex:[['/tp Steve','я → к Steve'],['/tphere Steve','Steve → ко мне']],
-  steps:[
-   ['Steve далеко, что-то делает',function(){W.go('steve',600);W.go('you',40)}],
-   ['/tp Steve',function(){W.type('/tp Steve',function(){})}],
-   ['Ты мгновенно рядом с ним',function(){W.puff(40,60);var y=$('you');snap(y);y.style.left='560px';unsnap(y);W.puff(560,60);W.chat(['<span class="c-o">Teleporting…</span>'])}]
-  ]},
- invsee:{t:'/invsee',who:'check',syn:'/invsee &lt;ник&gt;',
-  exp:'<b>Посмотреть инвентарь игрока.</b> Полезно при воровстве: видно, лежат ли у него украденные алмазы.',
-  ex:[['/invsee Steve','открыть инвентарь Steve']],
-  steps:[
-   ['Steve украл алмазы из сундука',function(){W.go('steve',500);later(function(){W.steal()},700);W.go('you',300)}],
-   ['/invsee Steve',function(){W.type('/invsee Steve',function(){})}],
-   ['Открывается его инвентарь: алмазы у него',function(){$('inv').className='on'}]
-  ]},
-
- rollback:{t:'/co rollback',who:'rollback',syn:'/co rb u:&lt;ник&gt; t:&lt;время&gt; r:&lt;радиус&gt;',
-  exp:'<b>Перемотка мира назад.</b> Сломанное встаёт на место. Сначала с <code>#preview</code>, потом без него.',
-  ex:[['/co rollback u:Steve t:1h #preview','сначала посмотреть'],['/co rollback u:Steve t:1h','откатить за час'],['/co rollback u:Steve t:30m r:20','30 мин, 20 блоков'],['/co rollback u:Steve t:1h i:stone','только stone'],['/co rollback u:Steve t:1h a:-block','только сломанное'],['/co rollback t:15m r:30','все игроки, 15 мин, 30 блоков'],['/co rollback u:Steve t:1h r:#global','по всему серверу']],
-  steps:[
-   ['Дом сломан',function(){W.grief();W.go('you',360)}],
-   ['Пишешь /co rb u:Steve t:1h r:20',function(){W.type('/co rb u:Steve t:1h r:20',function(){})}],
-   ['Блоки возвращаются',function(){W.fix();W.chat(['<span class="c-g">CoreProtect</span> - Rollback completed for "Steve".'])}]
-  ]},
- restore:{t:'/co restore',who:'rollback',syn:'/co rs u:&lt;ник&gt; t:&lt;время&gt; r:&lt;радиус&gt;',
-  exp:'<b>Отмена отката:</b> возвращает как было до rollback..',ex:[['/co restore u:Steve t:1h','восстановить за час'],['/co restore u:Steve t:1h #preview','сначала посмотреть']],
-  steps:[['Откатил лишнее',function(){W.go('you',360)}],['/co rs u:Steve t:1h r:20',function(){W.type('/co rs u:Steve t:1h r:20',function(){})}],['Изменения вернулись',function(){W.grief();W.chat(['<span class="c-g">CoreProtect</span> - Restore completed.'])}]]},
- undo:{t:'/co undo',who:'rollback',syn:'/co undo',exp:'<b>Ctrl+Z</b> для последнего rollback/restore..',ex:[['/co undo','отменить последний rollback/restore']],
-  steps:[['Сделал откат',function(){W.go('you',360)}],['/co undo',function(){W.type('/co undo',function(){})}],['Откат отменён',function(){W.grief();W.chat(['<span class="c-g">CoreProtect</span> - Undo completed.'])}]]},
- purge:{t:'/co purge',who:'service',syn:'/co purge t:&lt;время&gt;',exp:'<b>Удалить старые записи навсегда.</b> После этого старый гриф уже не найти.',ex:[],
-  steps:[['Записей слишком много',function(){W.go('you',360);W.chat(['<span class="c-x">… 2 000 000 записей …</span>'])}],['/co purge t:30d',function(){W.type('/co purge t:30d',function(){})}],['Всё старше 30 дней стёрто',function(){W.clear();W.chat(['<span class="c-g">CoreProtect</span> - Data purge successful.'])}]]},
- status:{t:'/co status',who:'service',syn:'/co status',exp:'Версия плагина и работает ли запись.',ex:[],
-  steps:[['/co status',function(){W.go('you',360);W.type('/co status',function(){})}],['Информация о плагине',function(){W.chat(['<span class="c-g">CoreProtect</span> - Version 23.x','Database: <span class="c-g">SQLite</span>'])}]]},
- reload:{t:'/co reload',who:'service',syn:'/co reload',exp:'Перечитать настройки плагина после изменений.',ex:[],
-  steps:[['/co reload',function(){W.go('you',360);W.type('/co reload',function(){})}],['Настройки применены',function(){W.chat(['<span class="c-g">CoreProtect</span> - Configuration reloaded.'])}]]},
- help:{t:'/co help',who:'service',syn:'/co help',exp:'Список команд CoreProtect прямо в чате.',ex:[],
-  steps:[['/co help',function(){W.go('you',360);W.type('/co help',function(){})}],['Список команд',function(){W.chat(['<span class="c-g">----- CoreProtect Help -----</span>','/co inspect · /co lookup · /co rollback …'])}]]},
- consumer:{t:'co consumer',who:'console',syn:'co consumer',exp:'Пауза записи. Пишется в консоли сервера.',ex:[],
-  steps:[['В консоли: co consumer',function(){W.type('> co consumer',function(){})}],['Запись на паузе',function(){W.chat(['<span class="c-y">Consumer queue processing paused.</span>'])}]]},
- migrate:{t:'co migrate-db',who:'console',syn:'co migrate-db &lt;тип&gt;',exp:'Перенос базы данных. Пишется в консоли, нужна очень редко.',ex:[],
-  steps:[['В консоли: co migrate-db mysql',function(){W.type('> co migrate-db mysql',function(){})}],['База перенесена',function(){W.chat(['<span class="c-g">CoreProtect</span> - Migration complete.'])}]]}
-};
-var GROUPS=[
- ['g-find','🔎 Найти',['inspect','near','lookup']],
- ['g-check','👁 Проверить',['tp','back','gm3','vanish','invsee']],
- ['g-pun','⚖️ Наказать',['mute','jail','kick','tempban','ban']],
- ['g-rb','⏪ Откат',['rollback','restore','undo']],
- ['g-svc','⚙️ Сервис',['purge','status','reload','help']],
- ['g-con','🖥 Консоль',['consumer','migrate']]
+/* ---------- death ---------- */
+var DEATH=[
+ {t:'Узнай, где он умер (координаты)',d:'Вещи при смерти записываются как «dropped» в месте смерти. Именно <code>a:-item</code> показывает координаты.',
+  c:[['/co l u:Ник a:-item t:1h','где выпали вещи (с координатами)']],
+  mc:[T('0.42/h ago ')+M+U(' Steve')+T(' dropped x1 ')+U('netherite_boots')+T('.'),G('(x120/y64/z-340/world)')],
+  a:'Кликни по координатам — телепортирует (право <code>coreprotect.teleport</code>). Или запомни и дойди сам.',
+  w:'<code>a:-inventory</code> координаты не показывает — это не ошибка, так сделан плагин.'},
+ {t:'Узнай, кто или что его убил',d:'Стоя на месте смерти:',
+  c:[['/co l a:kill r:5 t:1h','все убийства рядом'],['/co l u:Ник a:kill t:1d','кого убил конкретный игрок']],
+  mc:[T('0.42/h ago ')+M+U(' Alex')+T(' killed ')+U('Steve')+T('.'),G('(x120/y64/z-340/world)')],
+  a:'Если убил не игрок, вместо ника будет причина: <code>#zombie</code>, <code>#skeleton</code>, <code>#creeper</code>, <code>#lava</code>, <code>#fall</code>, <code>#fire</code>, <code>#drowning</code>, <code>#explosion</code>… Полный текст смерти («was slain by …») есть только в консоли: <code>logs/latest.log</code>.'},
+ {t:'Проверь, кто подобрал вещи',d:'Стоя на месте смерти:',
+  c:[['/co l a:+item r:5 t:1h','кто подбирал вещи здесь']],
+  mc:[T('0.40/h ago ')+P+U(' Alex')+T(' picked up x1 ')+U('netherite_boots')+T('.'),G('(x121/y64/z-340/world)')],
+  tip:'Подобрал сам умерший — эти вещи у него уже есть, второй раз не возвращай. Подобрал другой — смотри ситуацию «Уничтожил ли убийца вещи» ниже.'},
+ {t:'Посмотри, что вернётся (вместо #preview)',d:'Стоя на месте смерти. Это и есть «превью»: что покажет — то и вернётся.',
+  c:[['/co l u:Ник a:-inventory r:3 t:1h','вещи, пропавшие при смерти']],
+  a:'Ничего не нашлось? Возьми больше <code>t:</code> или <code>r:5</code> (если падал или двигался). <s>Зачёркнутые</s> строки уже вернули.'},
+ {t:'Верни вещи',d:'Условия: игрок <b>онлайн</b>, ты стоишь на месте смерти, у игрока есть свободное место. Без <code>#preview</code>.',
+  c:[['/co rollback u:Ник a:-inventory r:3 t:1h','вернуть вещи в инвентарь']],
+  x:'Если вещи уже кто-то подобрал (шаг 3), после отката они будут у двоих — это дюп.'},
+ {t:'Проверь результат',d:'Повтори поиск из шага 4: строки должны стать <s>зачёркнутыми</s>. Ошибся — отмени.',
+  c:[['/co l u:Ник a:-inventory r:3 t:1h','проверка'],['/co undo','отменить последний откат']]}
 ];
-function badge(w){var C={find:'🔎 Найти',check:'👁 Проверить',punish:'⚖️ Наказать',rollback:'⏪ Откат',service:'⚙️ Сервис',console:'🖥 Консоль'};return '<span class="cat k-'+w+'">'+(C[w]||w)+'</span>'}
-var G=$('groups'),cur='inspect';
-GROUPS.forEach(function(g){var row=document.createElement('div');row.className='grp '+g[0];row.innerHTML='<div class="gl">'+g[1]+'</div>';
-  g[2].forEach(function(k){var b=document.createElement('button');b.type='button';b.dataset.k=k;b.textContent=S[k].t;b.addEventListener('click',function(){play(k)});row.appendChild(b)});G.appendChild(row)});
-
-function play(k){
-  cur=k;token++;W.reset();var sc=S[k];
-  [].forEach.call(G.querySelectorAll('button'),function(b){b.classList.toggle('on',b.dataset.k===k)});
-  $('sTitle').textContent=sc.t;$('sBadge').innerHTML=badge(sc.who);
-  $('sSyn').innerHTML=SY(sc.syn);$('sExp').innerHTML=sc.exp;
-  $('sEx').innerHTML=sc.ex.length?('<div class="small muted">Примеры:</div>'+sc.ex.map(function(e){return exRow(e[0],e[1])}).join('')):'';
-  var dots=$('dots');dots.innerHTML='';sc.steps.forEach(function(){dots.appendChild(document.createElement('i'))});
-  var i=0;(function next(){
-    if(i>=sc.steps.length){later(function(){play(k)},3000);return}
-    var st=sc.steps[i];$('sNum').textContent=(i+1)+'/'+sc.steps.length;$('sCap').textContent=st[0];
-    [].forEach.call(dots.children,function(d,j){d.classList.toggle('on',j<=i)});
-    st[1]();i++;later(next,i===sc.steps.length?3600:3000);
-  })();
-}
-$('replay').addEventListener('click',function(){play(cur)});
-
-/* ---------- filter ---------- */
-var R=[{a:'-block',ic:'🪓',t:'сломал дверь'},{a:'-block',ic:'🧱',t:'сломал 4 доски в стене'},{a:'+block',ic:'🧨',t:'поставил TNT'},{a:'-container',ic:'💎',t:'взял 12 алмазов из сундука'},{a:'+container',ic:'📦',t:'положил землю в сундук'},{a:'+item',ic:'🫳',t:'подобрал меч с земли'},{a:'chat',ic:'💬',t:'написал: «лол я всё снёс»'},{a:'command',ic:'⌨️',t:'написал команду /home'},{a:'+session',ic:'🚪',t:'зашёл на сервер'},{a:'-session',ic:'🏃',t:'вышел с сервера'}];
-var F=[['','без a:','всё подряд'],['-block','a:-block','сломанные блоки'],['+block','a:+block','поставленные блоки'],['block','a:block','и сломанные, и поставленные'],['-container','a:-container','что взял из сундуков'],['container','a:container','всё с сундуками'],['+item','a:+item','что подобрал с земли'],['chat','a:chat','только чат'],['command','a:command','только команды'],['session','a:session','заходы и выходы']];
-var rows=$('rows'),chips=$('chips'),auto=true,fi=0;
-R.forEach(function(x){var d=document.createElement('div');d.className='r';d.innerHTML='<span class="ic">'+x.ic+'</span><span>'+x.t+'</span><span class="tg">a:'+x.a+'</span>';rows.appendChild(d)});
-F.forEach(function(f,n){var b=document.createElement('button');b.type='button';b.textContent=f[1];b.addEventListener('click',function(){auto=false;setF(n)});chips.appendChild(b)});
-function match(f,a){if(!f)return true;if(f[0]==='+'||f[0]==='-')return f===a;return a.replace(/^[+-]/,'')===f}
-function setF(n){fi=n;var f=F[n][0],cnt=0;
-  [].forEach.call(chips.children,function(b,j){b.classList.toggle('on',j===n)});
-  [].forEach.call(rows.children,function(d,j){var m=match(f,R[j].a);if(m)cnt++;d.classList.toggle('hide',!m);d.classList.toggle('hit',m&&!!f)});
-  $('fCmd').innerHTML='/co l u:Steve t:1h'+(f?' <span class="a">a:'+f+'</span>':'');
-  $('fRes').innerHTML='<b>'+F[n][1]+'</b> → показывает <b>'+F[n][2]+'</b>. Осталось строк: <b>'+cnt+' из '+R.length+'</b>.';}
-setF(0);setInterval(function(){if(auto&&pageName==='filter')setF((fi+1)%F.length)},2600);
-
-/* ---------- rules ---------- */
-var RULES=[
- {id:'r11',no:'§1.1',t:'ПвП',term:'Тюрьма 5 мин',d:'ПвП любого вида запрещено. Если оба игрока согласились на ПвП между собой, можно.',chk:[['/co l u:{N} t:30m a:chat','было ли согласие в чате']],pun:[['/jail {N} {J} 5m','']]},
- {id:'r12',no:'§1.2',t:'Гриферство',term:'Тюрьма 20 мин',d:'Порча построек игроков, порча спавна в радиусе 60 блоков, перестройка чужих построек.',chk:[['/co i','клик по сломанным местам'],['/co l u:{N} t:1d r:40 a:-block','что сломал']],pun:[['/jail {N} {J} 20m',''],['/co rollback u:{N} t:1d r:40 #preview','откат: сначала посмотреть'],['/co rollback u:{N} t:1d r:40','откатить гриф']]},
- {id:'r13',no:'§1.3',t:'Воровство',term:'Тюрьма 15 мин',d:'Любое воровство, даже если думал, что можно: с пола, у игроков, из сундуков, бочек.',chk:[['/co l u:{N} t:1d a:-container','что взял из сундуков'],['/co l u:{N} t:1d a:+item','что подобрал с пола'],['/invsee {N}','что у него в инвентаре']],pun:[['/jail {N} {J} 15m','']]},
- {id:'r14',no:'§1.4',t:'Нецензурные постройки',term:'Тюрьма 10 мин',d:'Нельзя строить непристойное, политику и т.д. Говорить о таком тоже нельзя.',chk:[['/co i','ЛКМ по блоку постройки'],['/co l u:{N} t:2h r:20 a:+block','что поставил']],pun:[['/jail {N} {J} 10m','']]},
- {id:'r15',no:'§1.5',t:'Оскорбления в чате и войсе',term:'Мут 1 час',d:'Оскорбления любого вида в голосовом и обычном чате. За оскорбление администрации срок больше.',chk:[['/co l u:{N} t:1h a:chat','сообщения в чате']],pun:[['/mute {N} 1h Оскорбление §1.5','']],note:'Войс не записывается, нужна запись (OBS) или свидетели.'},
- {id:'r16',no:'§1.6',t:'Ивенты',term:'Тюрьма 5 мин',d:'Нельзя срывать ивент: мешать, если вылетел, или использовать командные блоки.',chk:[['/co l r:40 t:1h a:click','кто что нажимал']],pun:[['/jail {N} {J} 5m','']]},
- {id:'r17',no:'§1.7',t:'Правила суда',term:'Тюрьма 10 мин',d:'Оскорбил судью: сразу в тюрьму. Нужны адвокат и войс-чат. Взятки не принимаем.',chk:[['/co l u:{N} t:1h a:chat','что писал']],pun:[['/jail {N} {J} 10m','']]},
- {id:'r18',no:'§1.8',t:'Спам',term:'Мут 10 мин + тюрьма 10 мин',d:'Спам любого вида запрещён. Даже если загриферили, просто отметь админа.',chk:[['/co l u:{N} t:5m a:chat #count','сколько сообщений за 5 мин']],pun:[['/mute {N} 10m Спам §1.8','1) мут'],['/jail {N} {J} 10m','2) тюрьма']]},
- {id:'r19',no:'§1.9',t:'Реклама',term:'БАН',ban:true,d:'Реклама в чате и войсе запрещена. Можно только про этот сервер, например про открытие магазина.',chk:[['/co l u:{N} t:1d a:chat','чат'],['/co l u:{N} t:1d a:sign','таблички']],pun:[['/ban {N} Реклама §1.9','']]},
- {id:'r20',no:'§2.0',t:'Побег',term:'+15 мин к сроку',d:'Сбежал с суда или из тюрьмы: срок увеличивают. За попытку ничего не дают.',chk:[['/co l u:{N} t:30m a:command','телепорты'],['/co l u:{N} t:30m a:-block','сломал стену']],pun:[['/jail {N} {J} 35m','прошлый срок + 15 мин (пример: 20 + 15)']]}
-];
-function renderRules(){
-  var N='Ник',J='1';
-  var sub=function(s){return s.replace(/\{N\}/g,N).replace(/\{J\}/g,J)};
-  $('rulesBox').innerHTML=RULES.map(function(r){
-    return '<div class="rule" id="'+r.id+'"><div class="top"><span class="no">'+r.no+'</span><span class="term'+(r.ban?' ban':'')+'">'+r.term+'</span></div><h3>'+r.t+'</h3><p>'+r.d+'</p>'+
-      '<div class="box chk"><div class="h">🔎 Проверить</div><div class="exlist">'+r.chk.map(function(c){return exRow(sub(c[0]),c[1])}).join('')+'</div></div>'+
-      '<div class="box pun"><div class="h">⚖️ Наказать</div><div class="exlist">'+r.pun.map(function(c){return exRow(sub(c[0]),c[1])}).join('')+'</div>'+(r.note?'<div class="small muted" style="margin-top:6px">'+r.note+'</div>':'')+'</div></div>';
-  }).join('');
-}
-renderRules();
-
-/* ---------- builder ---------- */
-[].forEach.call($('seg').children,function(b){b.addEventListener('click',function(){[].forEach.call($('seg').children,function(x){x.classList.toggle('on',x===b)});$('bCo').style.display=b.dataset.m==='co'?'':'none';$('bPun').style.display=b.dataset.m==='pun'?'':'none'})});
-var names={"":"всё","-block":"что сломал","+block":"что поставил","-container":"что взял из сундуков","+container":"что положил в сундуки","+item":"что подобрал с земли","-item":"что выкинул","chat":"что писал в чат","command":"какие команды писал","click":"что нажимал","kill":"кого убил","session":"когда заходил и выходил","sign":"что писал на табличках"};
-var tn={"5m":"последние 5 минут","30m":"последние 30 минут","1h":"последний час","6h":"последние 6 часов","1d":"последний день","3d":"последние 3 дня","1w":"последнюю неделю","":"всё время"};
-function buildCo(){var n=$('bNick').value.trim().replace(/\s+/g,''),a=$('bAct').value,t=$('bTime').value,r=$('bRad').value,p=['/co l'];
-  if(n)p.push('u:'+n);if(t)p.push('t:'+t);if(r)p.push('r:'+r);if(a)p.push('a:'+a);$('bOut').textContent=p.join(' ');
-  $('bExp').innerHTML='Покажет: '+(n?'<b>'+esc(n)+'</b>':'<b>все игроки</b>')+' — <b>'+names[a]+'</b> за <b>'+tn[t]+'</b>'+(r?' в <b>'+r+' блоках</b> от тебя':' <b>на всём сервере</b>')+'.'}
-var tWords={"5m":"5 минут","10m":"10 минут","15m":"15 минут","20m":"20 минут","30m":"30 минут","1h":"1 час","1d":"1 день","7d":"7 дней"};
-function buildPun(){var n=$('pNick').value.trim().replace(/\s+/g,'')||'Ник',ty=$('pType').value,t=$('pTime').value,j='1',rs=$('pReason').value.trim(),out='',ex='';
-  var needT={jail:1,mute:1,tempban:1},needJ={jail:1},needR={mute:1,kick:1,tempban:1,ban:1};
-  $('fTime').style.display=needT[ty]?'':'none';$('fReason').style.display=needR[ty]?'':'none';
-  if(ty==='jail'){out='/jail '+n+' '+j+' '+t;ex='Посадит <b>'+esc(n)+'</b> в тюрьму <b>№1</b> на <b>'+tWords[t]+'</b>.'}
-  if(ty==='mute'){out='/mute '+n+' '+t+(rs?' '+rs:'');ex='<b>'+esc(n)+'</b> не сможет писать в чат <b>'+tWords[t]+'</b>.'}
-  if(ty==='kick'){out='/kick '+n+(rs?' '+rs:'');ex='Выкинет <b>'+esc(n)+'</b> с сервера. Зайти он сможет сразу.'}
-  if(ty==='tempban'){out='/tempban '+n+' '+t+(rs?' '+rs:'');ex='<b>'+esc(n)+'</b> не сможет зайти <b>'+tWords[t]+'</b>.'}
-  if(ty==='ban'){out='/ban '+n+(rs?' '+rs:'');ex='Бан <b>навсегда</b>. Только с доказательствами!'}
-  if(ty==='unjail'){out='/unjail '+n;ex='Выпустит <b>'+esc(n)+'</b> из тюрьмы.'}
-  if(ty==='unmute'){out='/unmute '+n;ex='Снимет мут с <b>'+esc(n)+'</b>.'}
-  if(ty==='unban'){out='/unban '+n;ex='Разбанит <b>'+esc(n)+'</b>.'}
-  $('pOut').textContent=out;$('pExp').innerHTML=ex}
-['bNick','bAct','bTime','bRad'].forEach(function(id){$(id).addEventListener('input',buildCo);$(id).addEventListener('change',buildCo)});
-['pNick','pType','pTime','pReason'].forEach(function(id){$(id).addEventListener('input',buildPun);$(id).addEventListener('change',buildPun)});
-buildCo();buildPun();
-
-/* ---------- all table ---------- */
-var ALL=[
- ['/co i','find','/co i','лупа: кликаешь по блоку или сундуку и видишь, кто трогал'],
- ['/co near','find','/co near','всё, что было в 5 блоках вокруг тебя'],
- ['/co lookup','find','/co l u:Ник t:1h a:-block','поиск по нику, времени, действию, месту'],
- ['/co lookup r:20','find','/co l r:20 t:1h','все игроки в радиусе 20 блоков'],
- ['/co lookup i:','find','/co l i:diamond_ore t:1d a:-block','только один блок (X-ray)'],
- ['/co lookup a:container','find','/co l u:Ник a:container t:1d','действия с сундуками'],
- ['/co lookup a:inventory','find','/co l u:Ник a:inventory t:1d','изменения инвентаря'],
- ['/co lookup a:session','find','/co l u:Ник a:session','входы и выходы'],
- ['/co lookup a:username','find','/co l u:Ник a:username','старые ники'],
- ['/mute','punish','/mute Ник 10m причина','запрет писать в чат · /unmute снимает'],
- ['/jail','punish','/jail Ник 1 20m','тюрьма №1 на время · /unjail выпускает'],
- ['/kick','punish','/kick Ник причина','выкинуть с сервера (можно сразу зайти)'],
- ['/ban','punish','/ban Ник причина','бан навсегда · /unban снимает'],
- ['/tempban','punish','/tempban Ник 1d причина','бан на время'],
- ['/gm 3','check','/gm 3 · /gm 0','наблюдатель: невидимка, сквозь стены · обратно в выживание'],
- ['/tp','check','/tp Ник · /tphere Ник','телепорт к игроку / игрока к себе'],
- ['/vanish','check','/v','невидимость в обычном режиме'],
- ['/invsee','check','/invsee Ник','посмотреть инвентарь игрока'],
- ['/back','check','/back Ник','отправить игрока на место смерти (вещи лежат 5 мин)'],
- ['LastDeathLocation','check','/data get entity Ник LastDeathLocation','где игрок умер (координаты)'],
- ['time_since_death','check','/scoreboard players get Ник smert','сколько прошло со смерти (тики ÷ 20)'],
- ['latest.log','console','logs/latest.log → Ctrl+F → ник','кто убил и во сколько'],
- ['/co rollback a:inventory','rollback','/co rollback u:Ник t:10m a:inventory','вернуть инвентарь после смерти'],
- ['/co lookup u:#tnt','find','/co l r:20 t:1h u:#tnt,#creeper','взрывы рядом'],
- ['/co lookup e:','find','/co l u:Ник t:1d a:-block e:dirt','всё, кроме этих блоков'],
- ['/seen','check','/seen Ник','когда игрок был в сети последний раз'],
- ['/co rollback','rollback','/co rb u:Ник t:1h r:20','откатить гриф'],
- ['/co rollback #preview','rollback','/co rb u:Ник t:1h #preview','сначала посмотреть, что откатится'],
- ['/co rollback r:#global','rollback','/co rb u:Ник t:1h r:#global','откат по всему серверу'],
- ['/co restore','rollback','/co rs u:Ник t:1h r:20','отменить откат'],
- ['/co undo','rollback','/co undo','отменить последний rollback/restore'],
- ['/co purge','service','/co purge t:30d','удалить старые записи навсегда'],
- ['/co status · reload · help','service','/co status','служебные команды плагина'],
- ['co consumer · migrate-db','console','co consumer','только консоль сервера']
-];
-$('allTbl').insertAdjacentHTML('beforeend',ALL.map(function(r){return '<tr><td><code>'+esc(r[0])+'</code></td><td>'+badge(r[1])+'</td><td><code>'+esc(r[2])+'</code></td><td>'+r[3]+'</td></tr>'}).join(''));
-
-
-/* ---------- book ---------- */
-var BOOK=[
- {hd:'CoreProtect — команды для модераторов',sub:'ПРОВЕРКА',who:'find',sim:'inspect',items:[
-   ['/co inspect','Включить режим проверки блоков. Нажать команду ещё раз — выключить.','Включает «лупу». ЛКМ по блоку показывает, кто его ставил/ломал, ПКМ по сундуку показывает, кто брал вещи. Коротко: /co i']]},
- {sub:'ПОИСК ДЕЙСТВИЙ',who:'find',sim:'lookup',items:[
-   ['/co lookup u:НИК t:1h','Показать действия игрока за последний час.','Всё подряд: блоки, сундуки, чат. Добавь a:, чтобы оставить только нужное.'],
-   ['/co lookup r:20 t:1h','Показать действия в радиусе 20 блоков за последний час.','Ник не нужен: покажет всех, кто что-то делал в 20 блоках от тебя. Удобно, если не знаешь, кто загриферил.']]},
- {who:'find',sim:'lookup',items:[
-   ['/co lookup i:diamond_ore t:1d a:-block','Показать добычу алмазной руды за последний день.','i: = только этот блок, a:-block = сломанные. Так ловят X-ray: если кто-то копает только алмазы.'],
-   ['/co lookup u:НИК a:chat t:1d','Показать сообщения игрока за последний день.','Доказательство для спама (§1.8), оскорблений (§1.5), рекламы (§1.9).']]},
- {who:'find',sim:'lookup',items:[
-   ['/co lookup u:НИК a:container t:1d','Показать действия игрока с сундуками и другими контейнерами.','Что клал и что брал. Для воровства бери a:-container, тогда будет только «взял».'],
-   ['/co lookup u:НИК a:inventory t:1d','Показать изменения инвентаря игрока.','Что появлялось и пропадало у игрока в инвентаре.']]},
- {who:'find',sim:'lookup',items:[
-   ['/co lookup u:НИК a:session','Показать входы и выходы игрока.','Когда заходил и выходил. Полезно при побеге (§2.0) и чтобы понять, был ли игрок онлайн во время грифа.'],
-   ['/co lookup u:НИК a:username','Показать предыдущие никнеймы игрока.','Если игрок сменил ник, здесь видны старые.']]},
- {sub:'ОТКАТ',who:'rollback',sim:'rollback',items:[
-   ['/co rollback u:НИК t:1h #preview','Предварительно показать, что будет откатано.','#preview показывает откат только тому, кто пишет команду. Мир не меняется. Отменить превью: /co cancel.'],
-   ['/co rollback u:НИК t:1h','Откатить действия игрока за последний час.','Без r: откат идёт в радиусе 10 блоков от того, кто пишет команду.']]},
- {who:'rollback',sim:'rollback',items:[
-   ['/co rollback u:НИК t:30m r:20','Откатить действия игрока за 30 минут в радиусе 20 блоков.',''],
-   ['/co rollback u:НИК t:1h i:stone','Откатить только действия со stone.','i: оставляет только этот блок.']]},
- {who:'rollback',sim:'rollback',items:[
-   ['/co rollback u:НИК t:1h a:-block','Откатить только сломанные игроком блоки.','Поставленное игроком останется, вернётся только сломанное.'],
-   ['/co rollback t:15m r:30','Откатить действия всех игроков за 15 минут в радиусе 30 блоков.','Осторожно: откатит и честных игроков рядом.']]},
- {who:'rollback',sim:'rollback',items:[
-   ['/co rollback u:НИК t:1h r:#global','Откатить действия игрока за час по всему серверу.','r:#global означает все миры и любое расстояние.']]},
- {sub:'ОТМЕНА ОТКАТА',who:'rollback',sim:'undo',items:[
-   ['/co undo','Отменить последний rollback/restore.','Как Ctrl+Z: если откатили не то.']]},
- {sub:'ВОССТАНОВЛЕНИЕ',who:'rollback',sim:'restore',items:[
-   ['/co restore u:НИК t:1h','Восстановить действия игрока за последний час.','Противоположность rollback: возвращает как было до отката.'],
-   ['/co restore u:НИК t:1h #preview','Предварительно посмотреть, что будет восстановлено.','']]}
-];
-var bp=0,busy=false;
-function bkN(){return 'НИК'}
-function bkSub(c){return c.replace(/НИК/g,bkN())}
-function leafHTML(i){var p=BOOK[i];
-  return '<div class="pg">Page '+(i+1)+' of '+BOOK.length+'</div>'+(p.hd?'<div style="margin-bottom:6px">'+p.hd+'</div>':'')+(p.sub?'<div class="hd">'+p.sub+'</div>':'')+
-   p.items.map(function(it){return '<div class="it"><span class="cmd" data-cp="'+esc(bkSub(it[0]))+'" title="Нажми, чтобы скопировать">'+esc(bkSub(it[0]))+'</span><div class="ds">'+it[1]+'</div></div>'}).join('')+
-   '<button class="arr l" type="button" data-bk="-1" '+(i===0?'disabled':'')+' aria-label="Назад">◀</button><button class="arr r" type="button" data-bk="1" '+(i===BOOK.length-1?'disabled':'')+' aria-label="Вперёд">▶</button>'}
-function bkSide(){var p=BOOK[bp];
-  $('bkSide').innerHTML='<div class="card"><h3>Страница '+(bp+1)+' '+badge(p.who)+'</h3>'+
-   
-   p.items.map(function(it){return exRow(bkSub(it[0]),it[1]+(it[2]?'<br><span style="color:#cfd6dc">'+it[2]+'</span>':''))}).join('')+
-   '<a class="simlink" href="#sim" data-sim="'+p.sim+'">▶ Посмотреть в симуляторе</a></div>'}
-function bkRender(dir){var box=$('mcbook');
-  var neu=document.createElement('div');neu.className='leaf'+(dir>0?' inF':dir<0?' inB':'');neu.innerHTML=leafHTML(bp);
-  var old=box.firstChild;
-  if(old&&dir){old.style.zIndex=2;old.className='leaf '+(dir>0?'turnF':'turnB');box.insertBefore(neu,old);busy=true;setTimeout(function(){if(old.parentNode)old.remove();busy=false},520)}
-  else{box.innerHTML='';box.appendChild(neu)}
-  [].forEach.call($('bnav').children,function(b,j){b.classList.toggle('on',j===bp)});bkSide()}
-function bkGo(n){if(busy||n<0||n>=BOOK.length||n===bp)return;var d=n>bp?1:-1;bp=n;bkRender(d)}
-BOOK.forEach(function(p,i){var b=document.createElement('button');b.type='button';b.textContent=i+1;b.className=p.who==='rollback'?'adm':'mod';b.addEventListener('click',function(){bkGo(i)});$('bnav').appendChild(b)});
-document.addEventListener('click',function(e){var a=e.target.closest('[data-bk]');if(a&&!a.disabled)bkGo(bp+parseInt(a.dataset.bk,10));var s=e.target.closest('[data-sim]');if(s)pendingSim=s.dataset.sim});
-document.addEventListener('keydown',function(e){if(pageName!=='book'||/INPUT|SELECT|TEXTAREA/.test((e.target.tagName||'')))return;if(e.key==='ArrowRight')bkGo(bp+1);if(e.key==='ArrowLeft')bkGo(bp-1)});
-
-bkRender(0);
+$('deathSteps').innerHTML=DEATH.map(stepHTML).join('');
 
 /* ---------- situations ---------- */
 var SITS=[
- {id:'pvp',ic:'⚔️',an:'shake',t:'Кого-то убили (ПвП)',rule:'§1.1',term:'Тюрьма 5 мин',
-  intro:'Игрок пишет: «меня убили». Нужно узнать <b>кто</b>, <b>когда</b> и <b>где</b>, было ли согласие на ПвП, и вернуть вещи.',
-  steps:[
-   {t:'Кто убил и когда',d:'Открой консоль или файл <code>logs/latest.log</code> в папке сервера, нажми <b>Ctrl+F</b> и введи ник жертвы. Там будет строка со временем и убийцей:',cmds:[],code:'[15:42:10] [Server thread/INFO]: Steve was slain by Alex',after:'<b>15:42:10</b> — время смерти, <b>Alex</b> — убийца. «was slain by» значит «убит игроком/мобом».'},
-   {t:'Где умер',d:'Покажет мир и координаты места смерти (нужен OP):',cmds:[['/data get entity Жертва LastDeathLocation','ответ: pos: [I; 120, 64, -340]'],['/tp 120 64 -340','телепорт на место (подставь свои цифры)']]},
-   {t:'Сколько времени прошло',d:'Один раз создай счётчик, потом в любой момент проверяй. Ответ придёт в тиках: <b>дели на 20</b>, получишь секунды.',cmds:[['/scoreboard objectives add smert minecraft.custom:minecraft.time_since_death','один раз, навсегда'],['/scoreboard players get Жертва smert','6000 = 300 сек = 5 минут']]},
-   {t:'Было ли согласие на ПвП',d:'По §1.1 ПвП можно, если оба согласились. Проверь чат обоих перед смертью:',cmds:[['/co l u:Убийца t:30m a:chat','что писал убийца'],['/co l u:Жертва t:30m a:chat','что писала жертва']],warn:'Если согласие было (например, «го пвп» → «го»), это не нарушение. Не наказывай.'},
-   {t:'Вернуть вещи',d:'Вещи лежат на земле <b>5 минут</b>. Сначала быстро отправь жертву на место смерти, потом проверь, кто подобрал.',cmds:[['/back Жертва','на место смерти (Essentials)'],['/co l r:10 t:10m a:+item','кто подбирал вещи (стой на месте смерти)'],['/invsee Убийца','нет ли вещей у убийцы']],warn:'Если вещи у убийцы, сначала забери их через /invsee, только потом выдавай жертве. Иначе получится дюп.'},
-   {t:'Наказать',d:'Если согласия не было:',cmds:[['/jail Убийца 1 5m','§1.1 ПвП: тюрьма 5 минут']]}
-  ]},
- {id:'death',ic:'💀',an:'fade',t:'Умер и потерял вещи',rule:'',term:'Без наказания',
-  intro:'Игрок умер (лава, моб, упал) и просит вернуть вещи. Наказывать некого, главное — вернуть только то, что реально пропало.',
-  steps:[
-   {t:'Быстро: первые 5 минут',d:'Пока вещи лежат на земле, отправь игрока на место смерти:',cmds:[['/back Ник','на место смерти'],['/data get entity Ник LastDeathLocation','или узнай координаты']]},
-   {t:'Что было в инвентаре',d:'Покажет, какие предметы пропали из инвентаря и когда:',cmds:[['/co l u:Ник t:30m a:-inventory','что ушло из инвентаря']],after:'Строчка <code>0.08/h ago</code> значит примерно 5 минут назад. Так же можно примерно понять время смерти.'},
-   {t:'Не подобрал ли уже сам',d:'Проверь, чтобы не выдать вещи второй раз:',cmds:[['/co l u:Ник t:10m a:+item','что он сам подобрал'],['/co l r:10 t:10m a:+item','кто подбирал рядом (стой на месте смерти)']]},
-   {t:'Вернуть откатом',d:'Попробуй вернуть инвентарь через CoreProtect. <code>t:</code> ставь чуть больше, чем прошло со смерти.',cmds:[['/co rollback u:Ник t:10m a:inventory #preview','сначала посмотреть'],['/co rollback u:Ник t:10m a:inventory','вернуть'],['/invsee Ник','проверить, что вернулось']]},
-   {t:'Если не сработало: вручную',d:'Открой его инвентарь и в креативе положи вещи <b>только из списка</b>, который показал шаг 2.',cmds:[['/invsee Ник',''],['/gm 1','креатив'],['/gm 0','обратно']],warn:'Не верь на слово «у меня было 5 стаков алмазов»: давай только то, что видно в логах.'}
-  ]},
- {id:'grief',ic:'🏚️',an:'shake',t:'Сломали чужой дом (гриф)',rule:'§1.2',term:'Тюрьма 20 мин',
-  intro:'Порча чужих построек, порча спавна в радиусе 60 блоков, перестройка чужих построек.',
-  steps:[
-   {t:'Найти, кто это',d:'Включи лупу и кликни ЛКМ по 2–3 дырам. Если везде один ник, это он.',cmds:[['/co i','включить/выключить лупу']]},
-   {t:'Что именно сломал',d:'Список всего, что он сломал рядом. Если не знаешь ник, убери <code>u:</code>.',cmds:[['/co l u:Ник t:1d r:40 a:-block','что сломал этот игрок'],['/co l r:20 t:1d a:-block','все, кто ломал рядом'],['/co l u:Ник t:1d r:40 a:-block e:dirt,grass_block','без земли (убрать мусор)']]},
-   {t:'Доказательство',d:'Сделай скриншот ответа: <b>F2</b>.',cmds:[]},
-   {t:'Откатить',d:'Сначала посмотри, что вернётся (видно только тебе), потом та же команда без <code>#preview</code>.',cmds:[['/co rollback u:Ник t:1d r:40 #preview','предпросмотр'],['/co rollback u:Ник t:1d r:40','откатить'],['/co undo','если откатил не то']],warn:'Всегда пиши u:Ник. Без него откатятся постройки всех игроков рядом.'},
-   {t:'Наказать',d:'',cmds:[['/jail Ник 1 20m','§1.2 гриф: 20 минут']]}
-  ]},
- {id:'theft',ic:'💎',an:'bounce',t:'Украли из сундука / шалкеры',rule:'§1.3',term:'Тюрьма 15 мин',
-  intro:'Воровство любого вида: из сундуков, бочек, шалкеров, с пола, у игроков.',
-  steps:[
-   {t:'Кто брал из сундука',d:'Лупа + <b>ПКМ по сундуку</b> покажет, кто что клал и брал. Или поиск:',cmds:[['/co i','ПКМ по сундуку'],['/co l u:Ник t:1d a:-container','что он взял из сундуков']]},
-   {t:'Если шалкеры стояли как блоки',d:'Шалкер, который стоит на земле, — это блок. Если вор его сломал, смотри сломанные блоки:',cmds:[['/co l u:Ник t:1d a:-block','что сломал (шалкеры тоже)']]},
-   {t:'Где вещи сейчас',d:'Проверь его инвентарь и не спрятал ли он вещи в свой сундук:',cmds:[['/invsee Ник','инвентарь вора'],['/co l u:Ник t:1d a:+container','куда он что положил (координаты)']]},
-   {t:'Вернуть',d:'<b>Сначала забери</b> вещи у вора через <code>/invsee</code>. Потом верни владельцу: отдай сам или откатом у сундука.',cmds:[['/co rollback u:Ник t:1d r:10 a:container #preview','у сундука: предпросмотр'],['/co rollback u:Ник t:1d r:10 a:container','вернуть в сундук'],['/co rollback u:Ник t:1d r:10 a:-block','если ломал шалкеры как блоки']],warn:'Откат кладёт вещи в сундук, но у вора они тоже остаются. Без /invsee получится дюп.'},
-   {t:'Наказать',d:'',cmds:[['/jail Ник 1 15m','§1.3 воровство: 15 минут']]}
-  ]},
- {id:'xray',ic:'🕵️',an:'bounce',t:'Подозрение на X-ray / читы',rule:'',term:'Решает админ',
-  intro:'Игрок слишком быстро находит алмазы. Проверь цифры и последи за ним.',
-  steps:[
-   {t:'Сколько алмазов накопал',d:'В 1.21 почти все алмазы в <b>deepslate_diamond_ore</b>, поэтому пиши обе руды через запятую.',cmds:[['/co l u:Ник i:diamond_ore,deepslate_diamond_ore t:1d a:-block #count','сколько руды за день'],['/co l i:diamond_ore,deepslate_diamond_ore t:1d a:-block','все игроки, кто копал (с никами)']]},
-   {t:'Сколько камня вокруг',d:'Честный игрок ломает много камня, читер идёт прямо к руде.',cmds:[['/co l u:Ник i:stone,deepslate t:1h a:-block #count','сколько камня за час']],after:'Много руды и мало камня — подозрительно. Например, 40 руды и 200 камня за час.'},
-   {t:'Куда он копал',d:'Список с координатами: видно, идёт ли он прямыми туннелями к руде.',cmds:[['/co l u:Ник i:deepslate_diamond_ore t:1d a:-block','координаты каждой руды']]},
-   {t:'Последить незаметно',d:'Режим наблюдателя: тебя не видно, можно лететь сквозь стены.',cmds:[['/gm 3','наблюдатель'],['/tp Ник','к игроку'],['/gm 0','обратно в выживание']]},
-   {t:'Что дальше',d:'В законах TolSMP нет пункта про читы. Сделай скриншоты (F2) и отправь админу, он решает про бан.',cmds:[]}
-  ]},
- {id:'spam',ic:'📢',an:'shake',t:'Спамит в чат',rule:'§1.8',term:'Мут 10 мин + тюрьма 10 мин',
-  intro:'Спам любого вида запрещён. Даже если игрока загриферили, он должен просто отметить админа.',
-  steps:[
-   {t:'Сколько написал',d:'',cmds:[['/co l u:Ник t:5m a:chat #count','число сообщений за 5 минут']]},
-   {t:'Что именно',d:'',cmds:[['/co l u:Ник t:5m a:chat','текст сообщений']]},
-   {t:'Наказать',d:'Обе команды по очереди:',cmds:[['/mute Ник 10m Спам §1.8','1) мут'],['/jail Ник 1 10m','2) тюрьма']]}
-  ]},
- {id:'insult',ic:'🤬',an:'shake',t:'Оскорбляет',rule:'§1.5',term:'Мут 1 час',
-  intro:'Оскорбления любого вида в обычном и голосовом чате. За оскорбление администрации срок больше.',
-  steps:[
-   {t:'Проверить чат',d:'',cmds:[['/co l u:Ник t:1h a:chat','что писал']],after:'Войс CoreProtect не записывает: нужна запись (OBS) или свидетели.'},
-   {t:'Это оскорбление?',d:'<b>Оскорбил человека</b> (игрока, модера, админа) → это §1.5, мут.<br><b>«Сервер отстой»</b> — грубое мнение, а не оскорбление человека → сначала предупреждение. Повторяет много раз → спам §1.8.',cmds:[['/kick Ник Предупреждение: без оскорблений','если это первый раз и не про человека']]},
-   {t:'Наказать',d:'',cmds:[['/mute Ник 1h Оскорбление §1.5','мут 1 час']]}
-  ]},
- {id:'ads',ic:'🔗',an:'bounce',t:'Реклама другого сервера',rule:'§1.9',term:'БАН',ban:true,
-  intro:'Реклама в чате и войсе запрещена. Можно только про этот сервер, например про открытие магазина.',
-  steps:[
-   {t:'Найти рекламу',d:'',cmds:[['/co l u:Ник t:1d a:chat','в чате'],['/co l u:Ник t:1d a:sign','на табличках']]},
-   {t:'Доказательство',d:'Скриншот (F2). Бан навсегда, поэтому без доказательств нельзя.',cmds:[]},
-   {t:'Наказать',d:'',cmds:[['/ban Ник Реклама §1.9','бан навсегда'],['/unban Ник','если ошибся']]}
-  ]},
- {id:'build',ic:'🚫',an:'shake',t:'Непристойная постройка',rule:'§1.4',term:'Тюрьма 10 мин',
-  intro:'Нельзя строить непристойное, политику и т.д. Говорить о таком тоже нельзя.',
-  steps:[
-   {t:'Кто построил',d:'',cmds:[['/co i','ЛКМ по блоку постройки'],['/co l u:Ник t:2h r:20 a:+block','что он поставил']]},
-   {t:'Убрать постройку',d:'Откат только поставленных блоков:',cmds:[['/co rollback u:Ник t:2h r:20 a:+block #preview','предпросмотр'],['/co rollback u:Ник t:2h r:20 a:+block','убрать']]},
-   {t:'Наказать',d:'',cmds:[['/jail Ник 1 10m','§1.4: 10 минут']]}
-  ]},
- {id:'escape',ic:'🏃',an:'bounce',t:'Сбежал из тюрьмы / с суда',rule:'§2.0',term:'+15 мин к сроку',
-  intro:'За побег добавляют 15 минут. За попытку ничего не дают.',
-  steps:[
-   {t:'Как сбежал',d:'',cmds:[['/co l u:Ник t:30m a:command','телепорты (/home, /spawn, /tpa)'],['/co l u:Ник t:30m a:-block','сломал стену'],['/co l u:Ник t:1h a:session','перезаходил']]},
-   {t:'Посадить обратно',d:'Время = сколько оставалось + 15 минут. Например, оставалось 10 → пиши 25m.',cmds:[['/jail Ник 1 25m','пример: 10 + 15']]}
-  ]},
- {id:'event',ic:'🎉',an:'bounce',t:'Срывает ивент',rule:'§1.6',term:'Тюрьма 5 мин',
-  intro:'Нельзя мешать ивенту (даже если вылетел) и использовать командные блоки.',
-  steps:[
-   {t:'Проверить',d:'',cmds:[['/co l r:40 t:1h a:click','кто нажимал кнопки/рычаги'],['/co l u:Ник t:1h a:+block','что ставил']]},
-   {t:'Наказать',d:'',cmds:[['/jail Ник 1 5m','§1.6: 5 минут'],['/kick Ник Срыв ивента','если надо убрать сразу']]}
-  ]},
- {id:'boom',ic:'💥',an:'shake',t:'Взрыв или пожар',rule:'§1.2',term:'Если игрок — гриф',
-  intro:'Что-то взорвалось или сгорело. Узнай, это крипер/случайность или игрок с TNT.',
-  steps:[
-   {t:'Что взорвалось или сгорело',d:'Особые «игроки» в CoreProtect: <code>#tnt</code>, <code>#creeper</code>, <code>#explosion</code>, <code>#fire</code>.',cmds:[['/co l r:20 t:1h u:#tnt,#creeper,#explosion','взрывы рядом'],['/co l r:20 t:1h u:#fire','что сгорело']]},
-   {t:'Кто поставил TNT / поджёг',d:'',cmds:[['/co l r:30 t:1h i:tnt a:+block','кто ставил TNT'],['/co l r:30 t:1h i:fire a:+block','кто поджигал']]},
-   {t:'Откатить',d:'',cmds:[['/co rollback u:#tnt,#creeper,#explosion r:20 t:1h #preview','предпросмотр'],['/co rollback u:#tnt,#creeper,#explosion r:20 t:1h','вернуть взорванное'],['/co rollback u:#fire r:20 t:1h','вернуть сгоревшее']]},
-   {t:'Если это игрок',d:'Это гриф (§1.2):',cmds:[['/jail Ник 1 20m','20 минут']]}
-  ]}
+ {id:'s-destroy',ic:'🔥',t:'Уничтожил ли убийца вещи',law:'§1.1 ПвП',steps:[
+  {t:'Важно понять',d:'Вместо <code>Убийца</code> и <code>Жертва</code> пиши ники. CoreProtect <b>не записывает</b>, что предмет сгорел в лаве, разбился о кактус или исчез через 5 минут. Но путь вещей видно по шагам ниже.'},
+  {t:'Кто подобрал вещи',d:'Стоя на месте смерти:',c:[['/co l a:+item r:5 t:1h','кто подбирал']]},
+  {t:'Что убийца сделал с ними',d:'',c:[['/co l u:Убийца a:-item t:1h','выкинул / бросил / положил в эндер-сундук — с координатами'],['/co l u:Убийца a:+container t:1h','положил в сундук — с координатами']],
+   tip:'«dropped» у лавы, кактуса или в пустоте, а потом там никто ничего не подобрал — значит, вещи уничтожены. «deposited» — лежат в его эндер-сундуке. «added» — лежат в обычном сундуке.'},
+  {t:'Если вещи в сундуке: вернуть без дюпа',d:'Сначала убери их из сундука убийцы (стоя у этого сундука), потом верни владельцу (стоя на месте смерти):',
+   c:[['/co rollback u:Убийца a:+container r:3 t:1h','у сундука: убрать то, что убийца туда положил'],['/co rollback u:Жертва a:-inventory r:3 t:1h','на месте смерти: вернуть вещи владельцу (он должен быть онлайн)']]},
+  {t:'Если вещи ещё у убийцы',d:'Пока убийца онлайн, можно убрать подобранное из его инвентаря. Стоя на месте смерти:',
+   c:[['/co l u:Убийца a:+inventory r:5 t:1h','что попало ему в инвентарь здесь (проверка)'],['/co rollback u:Убийца a:+inventory r:5 t:1h','убрать это из его инвентаря (убийца онлайн)']],
+   w:'Сначала обязательно проверка (первая команда). Потом верни вещи владельцу, как в разделе «Игрок умер».'},
+  {t:'Наказать',d:'Если согласия на ПвП не было:',c:[['/jail Убийца 1 5m','§1.1 ПвП']]}
+ ]},
+ {id:'s-pvp',ic:'⚔️',t:'Убийство: было ли согласие на ПвП',law:'§1.1 · тюрьма 5 мин',steps:[
+  {t:'Кто кого убил',d:'Стоя на месте смерти:',c:[['/co l a:kill r:5 t:1h','кто убил']]},
+  {t:'Было ли согласие',d:'По §1.1 ПвП разрешено, если оба согласились. Проверь чат обоих:',c:[['/co l u:Убийца a:chat t:30m','чат убийцы'],['/co l u:Жертва a:chat t:30m','чат жертвы']],tip:'«го пвп» → «го» — это согласие. Тогда не наказывай.'},
+  {t:'Вернуть вещи',d:'Смотри раздел «Игрок умер» выше.'},
+  {t:'Наказать',d:'',c:[['/jail Убийца 1 5m','§1.1: 5 минут']]}
+ ]},
+ {id:'s-grief',ic:'🏚️',t:'Гриф: сломали постройку',law:'§1.2 · тюрьма 20 мин',steps:[
+  {t:'Найти, кто ломал',d:'Включи лупу. <b>ЛКМ по блоку</b> — кто его ставил или ломал. <b>ПКМ по стороне блока</b> — кто сломал блок, который стоял рядом (в пустом месте).',c:[['/co i','включить / выключить лупу']]},
+  {t:'Посмотреть всё сломанное',d:'',c:[['/co l u:Ник a:-block r:30 t:1d','что он сломал рядом с тобой'],['/co l a:-block r:20 t:1d','не знаешь ник — все, кто ломал рядом'],['/co l u:Ник a:-block r:30 t:1d e:dirt,grass_block','то же, но без земли и травы']]},
+  {t:'Превью отката',d:'Для блоков превью работает. Изменения видишь только ты.',c:[['/co rollback u:Ник r:30 t:1d #preview','превью'],['/co cancel','отменить превью']]},
+  {t:'Откатить',d:'',c:[['/co rollback u:Ник r:30 t:1d','откат всего, что он делал рядом']],x:'Всегда с <code>u:Ник</code>. Без него откатятся постройки всех игроков в радиусе.'},
+  {t:'Наказать',d:'',c:[['/jail Ник 1 20m','§1.2: 20 минут']]}
+ ]},
+ {id:'s-chest',ic:'💎',t:'Воровство из сундука / шалкеры',law:'§1.3 · тюрьма 15 мин',steps:[
+  {t:'Кто брал из сундука',d:'Лупа и <b>ПКМ по сундуку</b> — история этого сундука. Или поиск:',c:[['/co i','ПКМ по сундуку'],['/co l u:Ник a:-container t:1d','что он брал из сундуков (с координатами)'],['/co l a:-container r:3 t:1d','кто брал из сундука рядом с тобой']]},
+  {t:'Шалкер стоял как блок?',d:'Если вор сломал шалкер, это блок:',c:[['/co l u:Ник a:-block r:10 t:1d','сломанные блоки, в том числе шалкеры']]},
+  {t:'Куда дел вещи',d:'',c:[['/co l u:Ник a:+container t:1d','положил в свой сундук'],['/co l u:Ник a:-item t:1d','выкинул или положил в эндер-сундук']]},
+  {t:'Вернуть в сундук',d:'Встань у сундука владельца. Сначала проверка, потом откат (превью для сундуков нет):',c:[['/co l u:Ник a:container r:3 t:1d','что вернётся'],['/co rollback u:Ник a:container r:3 t:1d','вернуть вещи в сундук'],['/co rollback u:Ник a:-block r:10 t:1d','вернуть сломанный шалкер']],
+   x:'Откат кладёт вещи в сундук, но у вора они остаются. Если он их уже переложил в свой сундук — откати и это (шаг «Уничтожил ли убийца вещи», пункт про сундук).'},
+  {t:'Наказать',d:'',c:[['/jail Ник 1 15m','§1.3: 15 минут']]}
+ ]},
+ {id:'s-boom',ic:'💥',t:'Взрыв или пожар',law:'если игрок — §1.2',steps:[
+  {t:'Что случилось',d:'',c:[['/co l u:#tnt,#creeper,#explosion r:20 t:1h','взрывы рядом'],['/co l u:#fire r:20 t:1h','что сгорело']]},
+  {t:'Кто поставил TNT или поджёг',d:'',c:[['/co l i:tnt a:+block r:30 t:1h','кто ставил TNT'],['/co l i:fire a:+block r:30 t:1h','кто поджигал']]},
+  {t:'Откатить',d:'',c:[['/co rollback u:#tnt,#creeper,#explosion r:20 t:1h #preview','превью'],['/co rollback u:#tnt,#creeper,#explosion r:20 t:1h','вернуть взорванное'],['/co rollback u:#fire r:20 t:1h','вернуть сгоревшее']]},
+  {t:'Наказать',d:'Если взорвал или поджёг игрок:',c:[['/jail Ник 1 20m','§1.2 гриф']]}
+ ]},
+ {id:'s-lava',ic:'🌋',t:'Залили лавой или водой',law:'§1.2 · тюрьма 20 мин',steps:[
+  {t:'Кто вылил',d:'',c:[['/co l i:lava,water a:+block r:20 t:1h','кто ставил лаву или воду']]},
+  {t:'Убрать',d:'',c:[['/co rollback u:Ник i:lava,water r:20 t:1h #preview','превью'],['/co rollback u:Ник i:lava,water r:20 t:1h','убрать лаву/воду'],['/co rollback u:#fire r:20 t:1h','вернуть сгоревшее от лавы']]},
+  {t:'Наказать',d:'',c:[['/jail Ник 1 20m','§1.2']]}
+ ]},
+ {id:'s-xray',ic:'🕵️',t:'Подозрение на X-ray',law:'решает админ',steps:[
+  {t:'Сколько руды',d:'В 1.21 почти все алмазы в глубинном сланце — пиши обе руды:',c:[['/co l u:Ник i:diamond_ore,deepslate_diamond_ore a:-block t:1d #count','сколько алмазной руды'],['/co l i:diamond_ore,deepslate_diamond_ore a:-block t:1d','все, кто копал алмазы (с никами)'],['/co l u:Ник i:ancient_debris a:-block t:1d #count','древние обломки в Незере']]},
+  {t:'Сколько камня вокруг',d:'',c:[['/co l u:Ник i:stone,deepslate,netherrack a:-block t:1h #count','сколько камня за час']],tip:'Много руды и мало камня — подозрительно. Честный игрок ломает сотни блоков камня на каждую жилу.'},
+  {t:'Куда копал',d:'Координаты каждой руды — видно, идёт ли он прямо к руде:',c:[['/co l u:Ник i:deepslate_diamond_ore a:-block t:1d','с координатами']]},
+  {t:'Решение',d:'В законах нет пункта про читы — решает админ.',c:[['/tempban Ник 7d X-ray','бан на 7 дней'],['/ban Ник X-ray','бан навсегда']]}
+ ]},
+ {id:'s-chat',ic:'💬',t:'Спам, оскорбления, реклама',law:'§1.5 · §1.8 · §1.9',steps:[
+  {t:'Проверить',d:'',c:[['/co l u:Ник a:chat t:1h','что писал'],['/co l u:Ник a:chat t:5m #count','сколько сообщений (спам)'],['/co l u:Ник a:sign t:1d','что писал на табличках'],['/co l u:Ник a:command t:1h','какие команды писал']]},
+  {t:'Спам §1.8',d:'',c:[['/mute Ник 10m Спам §1.8','мут'],['/jail Ник 1 10m','и тюрьма']]},
+  {t:'Оскорбление §1.5',d:'Оскорбил человека — мут. «Сервер отстой» — это не оскорбление человека: сначала предупреди.',c:[['/mute Ник 1h Оскорбление §1.5','мут 1 час'],['/kick Ник Предупреждение','предупреждение']]},
+  {t:'Реклама §1.9',d:'Только со скриншотом (F2):',c:[['/ban Ник Реклама §1.9','бан']]}
+ ]},
+ {id:'s-mobs',ic:'🐺',t:'Убили питомца или животных',law:'',steps:[
+  {t:'Кто убил',d:'',c:[['/co l a:kill r:20 t:1d','все убийства рядом'],['/co l u:Ник a:kill t:1d','кого убил игрок']]},
+  {t:'Вернуть',d:'Убитых мобов можно вернуть откатом:',c:[['/co rollback u:Ник a:kill r:20 t:1d','вернуть убитых им мобов']]}
+ ]},
+ {id:'s-who',ic:'🔍',t:'Кто открывал сундук, нажимал кнопку, заходил',law:'',steps:[
+  {t:'Сундук, дверь, кнопка',d:'Лупа и <b>ПКМ</b> по сундуку, двери, кнопке или табличке.',c:[['/co i','лупа'],['/co l a:container r:3 t:1d','все действия с сундуком рядом'],['/co l a:click r:5 t:1d','кто нажимал рядом']]},
+  {t:'Когда игрок заходил',d:'',c:[['/co l u:Ник a:session t:7d','входы и выходы (с координатами)'],['/co l u:Ник a:username t:30d','под какими никами заходил']]},
+  {t:'Что было рядом со мной',d:'',c:[['/co near','всё в 5 блоках'],['/co l r:20 t:1h','всё в 20 блоках за час']]}
+ ]},
+ {id:'s-undo',ic:'🧯',t:'Откатил не то',law:'',steps:[
+  {t:'Сразу после отката',d:'Отменяет последний откат целиком:',c:[['/co undo','отменить']]},
+  {t:'Если undo уже не поможет',d:'Restore с теми же параметрами, что был откат:',c:[['/co restore u:Ник r:20 t:1h #preview','для блоков: сначала превью'],['/co restore u:Ник r:20 t:1h','вернуть как было']],w:'Restore по сундукам может создать дюп. Проверь после.'}
+ ]},
+ {id:'s-jail',ic:'🔒',t:'Тюрьма 1: создать и проверить',law:'один раз',steps:[
+  {t:'Создать или переставить',d:'Встань в тюрьме:',c:[['/setjail 1','тюрьма 1 в этой точке']]},
+  {t:'Пользоваться',d:'',c:[['/jail Ник 1 10m','посадить'],['/unjail Ник','выпустить'],['/jails','список тюрем']]}
+ ]}
 ];
-var FAQ=[
- ['⏰','Когда игрок умер','Консоль или <code>logs/latest.log</code> → Ctrl+F → ник. Или счётчик:',[['/scoreboard players get Ник smert','тики ÷ 20 = секунды (счётчик см. «Кого-то убили»)']]],
- ['📍','Где игрок умер','',[['/data get entity Ник LastDeathLocation','мир и координаты']]],
- ['🚪','Когда заходил и выходил','',[['/co l u:Ник a:session','все входы/выходы'],['/seen Ник','когда был онлайн последний раз']]],
- ['🎒','Что у игрока в инвентаре','',[['/invsee Ник','открыть инвентарь']]],
- ['📦','Кто открывал сундук','Лупа и ПКМ по сундуку:',[['/co i','']]],
- ['🧱','Кто сломал блок','Лупа и ЛКМ по блоку (или по месту, где он был):',[['/co i','']]],
- ['👀','Что было рядом со мной','',[['/co near','5 блоков'],['/co l r:20 t:1h','20 блоков за час']]],
- ['💎','Сколько алмазов накопали','',[['/co l i:diamond_ore,deepslate_diamond_ore t:1d a:-block','с никами'],['/co l u:Ник i:diamond_ore,deepslate_diamond_ore t:1d a:-block #count','только число']]],
- ['🏷️','Старые ники игрока','',[['/co l u:Ник a:username','']]],
- ['💬','Что игрок писал в чат','',[['/co l u:Ник t:1h a:chat','']]],
- ['⌨️','Какие команды писал','',[['/co l u:Ник t:1h a:command','']]],
- ['🔢','Сколько раз что-то сделал','Добавь в конец любой команды lookup:',[['#count','только число строк']]]
+$('sitBox').innerHTML=SITS.map(function(s){return '<details class="sit" id="'+s.id+'"><summary><span class="ic">'+s.ic+'</span><span>'+s.t+'</span>'+(s.law?'<span class="lw">'+s.law+'</span>':'<span style="margin-left:auto"></span>')+'<span class="ar">▶</span></summary><div class="body"><div class="steps">'+s.steps.map(stepHTML).join('')+'</div></div></details>'}).join('');
+$('openAll').onclick=function(){[].forEach.call(document.querySelectorAll('details.sit'),function(d){d.open=true})};
+$('closeAll').onclick=function(){[].forEach.call(document.querySelectorAll('details.sit'),function(d){d.open=false})};
+
+/* ---------- errors ---------- */
+var ERR=[
+ ['You can\'t preview inventory transactions.','#preview нельзя для инвентаря','Убери #preview. Сначала /co l с теми же параметрами, потом откат.'],
+ ['You can\'t preview container transactions.','#preview нельзя для сундуков','Так же: проверка через /co l, потом откат без #preview.'],
+ ['The user "Ник" is not online.','Откат инвентаря работает только для игрока на сервере','Подожди, пока игрок зайдёт, и повтори.'],
+ ['To use that action, please specify a user.','Для a:inventory нужен ник (и для сундуков, если нет r:)','Добавь u:Ник.'],
+ ['That action is not supported by the command.','Это действие нельзя откатить (chat, command, session, username, click, a:item)','Это только для поиска. Для вещей используй a:inventory или a:container.'],
+ ['Please specify a user or radius to lookup.','В поиске нет ни u:, ни r:, ни i:','Добавь u:Ник или r:10.'],
+ ['Please specify the amount of time to lookup.','Есть u: или i:, но нет t: и r:','Добавь t:, например t:1h.'],
+ ['The maximum rollback radius is 100.','Радиус больше лимита сервера','Возьми r:100 или меньше, или r:#global вместе с u:Ник.'],
+ ['You did not specify a rollback user.','Откат по всему миру без ника','Добавь u:Ник — откатывать весь мир без ника нельзя.'],
+ ['No results found.','Ничего не найдено','Больше t:, больше r:, проверь ник и действие. Стоишь ли ты в нужном месте?'],
+ ['User "Ник" not found.','Такого игрока нет в базе','Проверь ник (большие и маленькие буквы не важны, опечатки — важны).'],
+ ['That is not a valid action.','Опечатка в a:','Смотри список действий в разделе «Параметры».'],
+ ['"stone2" is an invalid block/entity name.','Неправильное название в i: или e:','Пиши по-английски, как в игре: нажми F3+H и наведи на предмет.'],
+ ['"x:" is not a supported parameter.','Опечатка в параметре','Только u: t: r: a: i: e: и хештеги.'],
+ ['"r:" can\'t be used with that action.','a:username нельзя с r:','Убери r:.'],
+ ['"i:" can\'t be used with that action.','a:chat, a:command, a:session, a:sign нельзя с i: и e:','Убери i: / e:.'],
+ ['You do not have permission to do that.','Нет права на этот вид поиска или откат','Смотри раздел «Права».'],
+ ['No previous rollback/restore found.','/co undo — нечего отменять','Undo работает только для твоего последнего отката.'],
+ ['No pending rollback/restore found.','/co cancel — нет активного превью','Превью уже закончилось.'],
+ ['A rollback/restore is already in progress.','Уже идёт другой откат','Подожди и повтори.']
 ];
-var curSit='pvp',doneMap={};
-function sitList(){$('sitList').innerHTML=SITS.map(function(s){return '<button type="button" data-sit="'+s.id+'"'+(s.id===curSit?' class="on"':'')+'><span class="si">'+s.ic+'</span><span><b>'+s.t+'</b><small>'+(s.rule?s.rule+' · ':'')+s.term+'</small></span></button>'}).join('')}
-function sitShow(id){var s=SITS.filter(function(x){return x.id===id})[0];if(!s)return;curSit=id;sitList();
-  var h='<div class="sithead"><div class="sicon a-'+s.an+'">'+s.ic+'</div><div><h2>'+s.t+'</h2><div>'+(s.rule?'<span class="term">'+s.rule+'</span> ':'')+'<span class="term'+(s.ban?' ban':'')+'">'+s.term+'</span></div></div></div><p class="sitintro">'+s.intro+'</p><div class="steps">';
-  s.steps.forEach(function(st,i){var key=id+'_'+i,dn=doneMap[key];
-    h+='<div class="stp'+(dn?' done':'')+'" style="animation-delay:'+(i*70)+'ms"><button type="button" class="sn" data-done="'+key+'" title="Отметить как сделано">'+(dn?'✓':(i+1))+'</button><div class="sb"><h3>'+st.t+'</h3>'+(st.d?'<p>'+st.d+'</p>':'')+(st.code?'<pre class="logline">'+esc(st.code)+'</pre>':'')+(st.cmds.length?'<div class="exlist">'+st.cmds.map(function(c){return exRow(c[0],c[1])}).join('')+'</div>':'')+(st.after?'<p class="small muted" style="margin:.5em 0 0">'+st.after+'</p>':'')+(st.warn?'<div class="swarn">⚠️ '+st.warn+'</div>':'')+'</div></div>'});
-  h+='</div><p class="small muted">Нажми на номер шага, чтобы отметить его как сделанный. Вместо <code>Ник</code>, <code>Жертва</code>, <code>Убийца</code> впиши настоящие ники.</p>';
-  $('sitBody').innerHTML=h;
-  if(pageName==='sit'&&window.innerWidth<820)$('sitBody').scrollIntoView({behavior:'smooth',block:'start'});
+$('errTbl').insertAdjacentHTML('beforeend',ERR.map(function(e){return '<tr><td><span class="msg">'+esc(e[0])+'</span></td><td>'+esc(e[1])+'</td><td>'+esc(e[2])+'</td></tr>'}).join(''));
+
+/* ---------- all commands ---------- */
+var CMDS=[
+ ['🔎 Лупа и рядом',[['/co i','лупа: ЛКМ по блоку — кто ставил/ломал; ПКМ по сундуку — кто брал; ПКМ по стороне блока — кто сломал соседний'],['/co near','всё в 5 блоках вокруг тебя']]],
+ ['🗂️ Поиск',[
+  ['/co l u:Ник t:1h','всё, что делал игрок за час'],['/co l r:20 t:1h','все игроки рядом за час'],['/co l u:Ник a:-block r:30 t:1d','что игрок сломал рядом'],['/co l a:-block r:20 t:1d','кто ломал рядом'],
+  ['/co l u:Ник a:-container t:1d','что взял из сундуков'],['/co l a:container r:3 t:1d','кто трогал сундук рядом'],['/co l u:Ник a:-item t:1h','что выкинул / выпало при смерти (координаты)'],['/co l a:+item r:5 t:1h','кто подбирал здесь'],
+  ['/co l a:kill r:5 t:1h','кто кого убил рядом'],['/co l u:Ник a:kill t:1d','кого убил игрок'],['/co l u:Ник a:-inventory r:3 t:1h','вещи, пропавшие при смерти'],
+  ['/co l u:Ник a:chat t:1h','чат'],['/co l u:Ник a:chat t:5m #count','сколько сообщений'],['/co l u:Ник a:command t:1h','команды'],['/co l u:Ник a:session t:7d','входы и выходы'],['/co l u:Ник a:username t:30d','старые ники'],['/co l u:Ник a:sign t:1d','таблички'],['/co l a:click r:5 t:1d','нажатия рядом'],
+  ['/co l i:diamond_ore,deepslate_diamond_ore a:-block t:1d','кто копал алмазы'],['/co l u:#tnt,#creeper,#explosion r:20 t:1h','взрывы рядом'],['/co l 2','следующая страница'],['/co l 1:20','20 строк на странице']]],
+ ['⏪ Откат',[
+  ['/co rollback u:Ник r:20 t:1h #preview','превью (только блоки)'],['/co rollback u:Ник r:20 t:1h','откатить всё, что игрок сделал рядом'],['/co rollback u:Ник a:-block r:20 t:1h','только сломанное'],['/co rollback u:Ник i:stone r:20 t:1h','только один вид блока'],
+  ['/co rollback u:Ник r:#global t:1h','по всему серверу (только с ником)'],['/co rollback u:Ник a:-inventory r:3 t:1h','вещи после смерти (игрок онлайн, стой на месте смерти)'],['/co rollback u:Ник a:container r:3 t:1d','вернуть в сундук (стой у сундука)'],
+  ['/co rollback u:Ник a:kill r:20 t:1d','вернуть убитых мобов'],['/co rollback u:#tnt,#creeper,#explosion r:20 t:1h','вернуть взорванное'],['/co rollback u:#fire r:20 t:1h','вернуть сгоревшее']]],
+ ['↩️ Отмена',[['/co undo','отменить последний откат'],['/co cancel','отменить превью'],['/co restore u:Ник r:20 t:1h','восстановить то, что откатили']]],
+ ['⚙️ Сервис',[['/co status','версия и состояние'],['/co reload','перечитать config.yml'],['/co purge t:30d','удалить записи старше 30 дней — навсегда'],['/co help','список команд']]],
+ ['⚖️ Наказания (Essentials)',[['/jail Ник 1 20m','тюрьма'],['/unjail Ник','выпустить'],['/mute Ник 10m причина','мут'],['/unmute Ник','снять мут'],['/kick Ник причина','кик'],['/tempban Ник 1d причина','бан на время'],['/ban Ник причина','бан навсегда'],['/unban Ник','разбан'],['/setjail 1','поставить тюрьму 1'],['/jails','список тюрем']]]
+];
+$('cmdBox').innerHTML=CMDS.map(function(g,gi){return '<h3 style="margin-top:16px" id="cg'+gi+'">'+g[0]+'</h3>'+rows(g[1])}).join('');
+
+/* ---------- laws ---------- */
+var LAWS=[
+ ['§1.1','ПвП','Тюрьма 5 мин','ПвП запрещено. Если оба игрока согласились — можно.',[['/jail Ник 1 5m','']]],
+ ['§1.2','Гриферство','Тюрьма 20 мин','Порча чужих построек, порча спавна в радиусе 60 блоков, перестройка.',[['/jail Ник 1 20m',''],['/co rollback u:Ник r:30 t:1d','откат']]],
+ ['§1.3','Воровство','Тюрьма 15 мин','Любое воровство: сундуки, бочки, с пола, у игроков. Даже если думал, что можно.',[['/jail Ник 1 15m','']]],
+ ['§1.4','Нецензурные постройки','Тюрьма 10 мин','Непристойное, политика и т.д. Говорить о таком тоже нельзя.',[['/jail Ник 1 10m',''],['/co rollback u:Ник a:+block r:20 t:1d','убрать постройку']]],
+ ['§1.5','Оскорбления','Мут 1 час','В чате и войсе. За оскорбление администрации срок больше.',[['/mute Ник 1h Оскорбление §1.5','']]],
+ ['§1.6','Ивенты','Тюрьма 5 мин','Срыв ивента, командные блоки на ивенте.',[['/jail Ник 1 5m','']]],
+ ['§1.7','Суд','Тюрьма 10 мин','Оскорбил судью — сразу тюрьма. Нужны адвокат и войс-чат. Взятки не принимаются.',[['/jail Ник 1 10m','']]],
+ ['§1.8','Спам','Мут 10 мин + тюрьма 10 мин','Любой спам. Даже если загриферили — просто отметь админа.',[['/mute Ник 10m Спам §1.8',''],['/jail Ник 1 10m','']]],
+ ['§1.9','Реклама','БАН','В чате и войсе. Можно только про этот сервер (например, открытие магазина).',[['/ban Ник Реклама §1.9','']]],
+ ['§2.0','Побег','+15 мин к сроку','Сбежал из тюрьмы или с суда. За попытку — ничего.',[['/jail Ник 1 25m','пример: оставалось 10 + 15']]]
+];
+$('lawBox').innerHTML=LAWS.map(function(l){return '<div class="law"><div class="hd"><span class="no">'+l[0]+'</span><span class="tm'+(l[2]==='БАН'?' ban':'')+'">'+l[2]+'</span></div><h3>'+l[1]+'</h3><p>'+l[3]+'</p>'+rows(l[4])+'</div>'}).join('');
+
+/* ---------- builder (rules from CoreProtect source) ---------- */
+var mode='l';
+var NOROLL=['chat','command','session','+session','-session','username','click','item','+item','-item'];
+var NOIE=['chat','command','session','+session','-session','username','sign'];
+function isInv(a){return /inventory/.test(a)}
+function isCont(a){return a==='container'||a==='+container'||a==='-container'}
+function v(id){return $(id).value.trim().replace(/\s+/g,'')}
+function build(){
+  var u=v('bU'),a=$('bA').value,t=$('bT').value,r=$('bR').value,i=v('bI'),e=v('bE'),pv=$('bP').checked,cnt=$('bC').checked,errs=[],warns=[],oks=[];
+  var p=[];if(u)p.push('u:'+u);if(a)p.push('a:'+a);if(i)p.push('i:'+i);if(e)p.push('e:'+e);if(r)p.push('r:'+r);if(t)p.push('t:'+t);
+  var base=p.join(' '),out=[];
+  if(mode==='l'){
+    var c='/co l'+(base?' '+base:'')+(cnt?' #count':'');
+    if(!u&&!r&&!i)errs.push('Please specify a user or radius to lookup. → добавь u:, r: или i:');
+    else if(!t&&!r)errs.push('Please specify the amount of time to lookup. → добавь t:');
+    if(isInv(a)&&!u)errs.push('To use that action, please specify a user. → для a:inventory нужен u:');
+    if(NOIE.indexOf(a)>=0&&(i||e))errs.push('"'+(i?'i:':'e:')+'" can\'t be used with that action.');
+    if(a==='username'&&r)errs.push('"r:" can\'t be used with that action.');
+    if(pv)warns.push('#preview работает только в откате, в поиске он не нужен.');
+    if(isInv(a))warns.push('a:inventory не показывает координаты. Нужны координаты — выбери -item.');
+    if(a==='-item'||a==='kill')oks.push('В ответе будут координаты — по ним можно кликнуть.');
+    out.push([c,'поиск']);
+  }else{
+    var cmdn=mode==='rb'?'rollback':'restore',canPv=!isCont(a)&&!isInv(a)&&NOROLL.indexOf(a)<0;
+    if(NOROLL.indexOf(a)>=0)errs.push('That action is not supported by the command. → '+a+' нельзя '+(mode==='rb'?'откатить':'восстановить'));
+    if(isInv(a)){if(!u)errs.push('To use that action, please specify a user.');else warns.push('Игрок '+u+' должен быть онлайн, иначе: The user "'+u+'" is not online.');
+      if(!r)warns.push('Для инвентаря радиус сам не ставится — откатится всё за это время по всему миру. Встань на место и выбери r:3.');}
+    if(isCont(a)&&!u&&!r)errs.push('To use that action, please specify a user.');
+    if(pv&&(isInv(a)||isCont(a)))errs.push('You can\'t preview '+(isInv(a)?'inventory':'container')+' transactions. → убери #preview, проверь через поиск');
+    if(r&&r[0]!=='#'&&+r>100)errs.push('The maximum rollback radius is 100.');
+    if(r&&r[0]==='#'&&!u)errs.push('You did not specify a rollback user. → для всего мира нужен u:');
+    if(!t)errs.push('Please specify the amount of time to '+cmdn+'. → добавь t:');
+    if(!r&&!isInv(a)&&!(r&&r[0]==='#'))warns.push('Без r: будет радиус 10 блоков от тебя.');
+    if(!u&&NOROLL.indexOf(a)<0)warns.push('Нет u: — откатятся действия ВСЕХ игроков в радиусе.');
+    if(isCont(a)||isInv(a))warns.push('Вещи вернутся, но у того, кто их взял, они останутся (дюп). Сначала забери у него.');
+    if(cnt)warns.push('#count работает только в поиске.');
+    out.push(['/co l'+(base?' '+base:''),'1) проверка — что затронет откат']);
+    if(pv&&canPv)out.push(['/co '+cmdn+' '+base+' #preview','2) превью (видишь только ты)']);
+    out.push(['/co '+cmdn+(base?' '+base:''),(pv&&canPv?'3)':'2)')+' '+(mode==='rb'?'откат':'восстановление')]);
+    out.push(['/co undo','если ошибся']);
+    if(!errs.length&&canPv&&!pv)oks.push('Для блоков можно сначала включить #preview.');
+  }
+  $('oTitle').textContent=mode==='l'?'Команда поиска':mode==='rb'?'Порядок отката':'Порядок восстановления';
+  $('oCmds').innerHTML=out.map(function(x){return row(x[0],x[1])}).join('');
+  $('oV').innerHTML=(errs.length?errs.map(function(x){return '<span class="msg">✖ '+esc(x)+'</span>'}).join(''):'<span class="msg ok">✔ Ошибок нет — плагин примет эту команду.</span>')+warns.map(function(x){return '<div class="warn" style="margin:0">⚠️ '+esc(x)+'</div>'}).join('')+oks.map(function(x){return '<div class="tip" style="margin:0">💡 '+esc(x)+'</div>'}).join('');
 }
-document.addEventListener('click',function(e){var b=e.target.closest('[data-sit]');if(b){sitShow(b.dataset.sit)}var d=e.target.closest('[data-done]');if(d){doneMap[d.dataset.done]=!doneMap[d.dataset.done];sitShow(curSit)}var g=e.target.closest('[data-gosit]');if(g){pendingSit=g.dataset.gosit}});
-$('faq').innerHTML=FAQ.map(function(f){return '<div class="card fq"><h3><span>'+f[0]+'</span>'+f[1]+'</h3>'+(f[2]?'<p class="small muted" style="margin:0 0 6px">'+f[2]+'</p>':'')+'<div class="exlist">'+f[3].map(function(c){return exRow(c[0],c[1])}).join('')+'</div></div>'}).join('');
-sitShow('pvp');
+['bU','bA','bT','bR','bI','bE','bP','bC'].forEach(function(id){$(id).addEventListener('input',build);$(id).addEventListener('change',build)});
+$('bA').addEventListener('change',function(){if(isInv($('bA').value)){$('bR').value='3';$('bP').checked=false}build()});
+[].forEach.call($('mode').children,function(b){b.addEventListener('click',function(){mode=b.getAttribute('data-m');[].forEach.call($('mode').children,function(x){x.classList.toggle('on',x===b)});build()})});
+build();
 
-/* ---------- i:/e: demo ---------- */
-var IE=[{b:'dirt',ic:'🟫',t:'земля ×50'},{b:'grass_block',ic:'🟩',t:'дёрн ×20'},{b:'stone',ic:'⬜',t:'камень ×30'},{b:'deepslate',ic:'⬛',t:'глубинный сланец ×40'},{b:'diamond_ore',ic:'💎',t:'алмазная руда ×2'},{b:'deepslate_diamond_ore',ic:'💠',t:'глуб. алмазная руда ×9'},{b:'oak_planks',ic:'🪵',t:'доски (чужой дом) ×12'}];
-var IEF=[['','без фильтра','всё подряд'],['i:diamond_ore','i:diamond_ore','только обычная алмазная руда'],['i:diamond_ore,deepslate_diamond_ore','i:diamond_ore,deepslate_diamond_ore','только алмазы (обе руды)'],['e:dirt','e:dirt','всё, кроме земли'],['e:dirt,grass_block,stone,deepslate','e:dirt,grass_block,stone,deepslate','без «мусора» — видно руду и чужой дом'],['i:oak_planks','i:oak_planks','только доски — что сломал в доме']];
-var ieAuto=true,iei=0;
-$('ieRows').innerHTML=IE.map(function(x){return '<div class="r"><span class="ic">'+x.ic+'</span><span>'+x.t+'</span><span class="tg">'+x.b+'</span></div>'}).join('');
-$('ieChips').innerHTML=IEF.map(function(f,n){return '<button type="button" data-ie="'+n+'">'+f[1]+'</button>'}).join('');
-function ieSet(n){iei=n;var f=IEF[n][0],typ=f.slice(0,2),list=f.slice(2).split(','),cnt=0;
-  [].forEach.call($('ieChips').children,function(b,j){b.classList.toggle('on',j===n)});
-  [].forEach.call($('ieRows').children,function(d,j){var b=IE[j].b,m=!f?true:typ==='i:'?list.indexOf(b)>=0:list.indexOf(b)<0;if(m)cnt++;d.classList.toggle('hide',!m);d.classList.toggle('hit',m&&!!f)});
-  $('ieCmd').innerHTML='/co l u:Steve t:1h a:-block'+(f?' <span class="a">'+f+'</span>':'');
-  $('ieRes').innerHTML=(f?'<b>'+(typ==='i:'?'i: — оставить только':'e: — убрать')+'</b> → ':'')+'показывает <b>'+IEF[n][2]+'</b>. Строк: <b>'+cnt+' из '+IE.length+'</b>.'}
-document.addEventListener('click',function(e){var b=e.target.closest('[data-ie]');if(b){ieAuto=false;ieSet(+b.dataset.ie)}});
-ieSet(0);setInterval(function(){if(ieAuto&&pageName==='filter')ieSet((iei+1)%IEF.length)},2800);
+/* ---------- search ---------- */
+var IDX=[];
+CMDS.forEach(function(g,gi){g[1].forEach(function(c){IDX.push({k:c[0]+' '+c[1]+' '+g[0],b:c[0],s:c[1],h:'#cg'+gi})})});
+SITS.forEach(function(s){IDX.push({k:s.t+' '+s.law+' '+s.steps.map(function(x){return x.t+' '+(x.d||'')}).join(' '),b:s.ic+' '+s.t,s:'ситуация'+(s.law?' · '+s.law:''),h:'#'+s.id,sit:1})});
+[['#death','💀 Игрок умер: координаты, убийца, вещи','смерть умер вещи координаты убийца death kill inventory item вернуть'],['#read','📖 Как читать ответ','ответ строка координаты зачёркнуто ago page dropped picked removed killed'],['#errors','⚠️ Ошибки и что делать','ошибка error preview online user radius not supported'],['#params','🎚️ Параметры и действия','параметр a: i: e: r: t: u: действие'],['#builder','🛠️ Конструктор','конструктор собрать проверить команду'],['#laws','⚖️ Законы','закон наказание тюрьма мут бан'],['#admin','🔐 Права и настройки','права permission config версия status']].forEach(function(x){IDX.push({k:x[1]+' '+x[2],b:x[1],s:'раздел',h:x[0]})});
+var q=$('q'),res=$('res');
+function norm(s){return s.toLowerCase().replace(/ё/g,'е')}
+function search(){var s=norm(q.value.trim());if(!s){res.classList.remove('on');res.innerHTML='';return}
+  var words=s.split(/\s+/),hits=IDX.filter(function(x){var k=norm(x.k);return words.every(function(w){return k.indexOf(w)>=0})}).slice(0,14);
+  res.innerHTML=hits.length?hits.map(function(x){return '<a href="'+x.h+'" data-sit="'+(x.sit?x.h.slice(1):'')+'"><b>'+esc(x.b)+'</b><small>'+esc(x.s)+'</small></a>'}).join(''):'<div class="none">Ничего не найдено</div>';
+  res.classList.add('on')}
+q.addEventListener('input',search);q.addEventListener('focus',search);
+q.addEventListener('keydown',function(e){if(e.key==='Escape'){q.value='';search();q.blur()}if(e.key==='Enter'){var f=res.querySelector('a');if(f)f.click()}});
+document.addEventListener('click',function(e){if(!e.target.closest('.searchwrap'))res.classList.remove('on');var a=e.target.closest('#res a');if(a){var id=a.getAttribute('data-sit');if(id){var d=$(id);if(d)d.open=true}res.classList.remove('on')}});
+document.addEventListener('keydown',function(e){if(e.key==='/'&&document.activeElement.tagName!=='INPUT'&&document.activeElement.tagName!=='SELECT'){e.preventDefault();q.focus()}});
+function openFromHash(){var h=location.hash.slice(1);var d=$(h);if(d&&d.tagName==='DETAILS')d.open=true}
+window.addEventListener('hashchange',openFromHash);openFromHash();
 
-route();
+/* ---------- active section in nav ---------- */
+var links=[].slice.call(document.querySelectorAll('nav.side a')),secs=links.map(function(a){return $(a.getAttribute('href').slice(1))});
+function spy(){var y=window.scrollY+90,cur=0;secs.forEach(function(s,i){if(s&&s.offsetTop<=y)cur=i});links.forEach(function(a,i){a.classList.toggle('on',i===cur)})}
+window.addEventListener('scroll',spy,{passive:true});spy();
 })();
 </script>
 </body>
